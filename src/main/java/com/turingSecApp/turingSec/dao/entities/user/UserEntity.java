@@ -20,7 +20,6 @@ import java.util.Set;
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long id;
     private String first_name;
     private String last_name;
@@ -32,6 +31,12 @@ public class UserEntity {
     private String password;
     private String email;
 
+
+    @Column(name = "activation_token")
+    private String activationToken;
+
+    @Column(name = "activated")
+    private boolean activated;
 
 
 

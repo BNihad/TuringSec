@@ -27,6 +27,11 @@
             <column name="email" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <!-- New columns for activation -->
+            <column name="activation_token" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="activated" type="BOOLEAN" defaultValueBoolean="false"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

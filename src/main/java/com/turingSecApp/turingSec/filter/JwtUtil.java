@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
-import com.turingSecApp.turingSec.user.CustomUserDetails;
+import com.turingSecApp.turingSec.service.user.CustomUserDetails;
 
 import java.util.stream.Collectors;
 

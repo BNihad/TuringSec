@@ -1,4 +1,4 @@
-package com.turingSecApp.turingSec.user;
+package com.turingSecApp.turingSec.service.user;
 
 
 
@@ -9,12 +9,19 @@ import com.turingSecApp.turingSec.dao.repository.HackerRepository;
 import com.turingSecApp.turingSec.dao.repository.RoleRepository;
 import com.turingSecApp.turingSec.dao.repository.UserRepository;
 import com.turingSecApp.turingSec.exception.UserAlreadyExistsException;
+import com.turingSecApp.turingSec.service.EmailNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+
+import static org.springframework.http.HttpStatus.CONFLICT;
 
 @Service
 public class UserService {
@@ -28,13 +35,19 @@ public class UserService {
     private RoleRepository roleRepository;
 
 
+
+    @Autowired
+    private EmailNotificationService emailNotificationService;
+
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    public UserEntity registerHacker(UserEntity user) {
+    public ResponseEntity<?> registerHacker(UserEntity user) {
+
         // Ensure the user doesn't exist
         if (userRepository.findByUsername(user.getUsername()) != null) {
             throw new UserAlreadyExistsException("Username is already taken.");
+
         }
 
         // Encode the password
@@ -57,10 +70,49 @@ public class UserService {
 
         hackerRepository.save(hackerEntity);
 
-        return user;
+        sendActivationEmail(user);
+
+        return ResponseEntity.ok(user);
     }
 
+    public boolean activateAccount(String token) {
+        // Retrieve user by activation token
+        UserEntity user = userRepository.findByActivationToken(token);
 
+        if (user != null && !user.isActivated()) {
+            // Activate the user by updating the account status or perform other necessary actions
+            user.setActivated(true);
+            userRepository.save(user);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void sendActivationEmail(UserEntity user) {
+        // Generate activation token and save it to the user entity
+        String activationToken = generateActivationToken();
+        user.setActivationToken(activationToken);
+        userRepository.save(user);
+
+        // Send activation email
+        String activationLink = "3.95.116.98/api/auth/activate?token=" + activationToken;
+        String subject = "Activate Your Account";
+        String content = "Dear " + user.getFirst_name() + ",\n\n"
+                + "Thank you for registering with our application. Please click the link below to activate your account:\n\n"
+                + activationLink + "\n\n"
+                + "Best regards,\nThe Application Team";
+
+        emailNotificationService.sendEmail(user.getEmail(), subject, content);
+    }
+
+    private String generateActivationToken() {
+        // You can implement your own token generation logic here
+        // This could involve creating a unique token, saving it in the database,
+        // and associating it with the user for verification during activation.
+        // For simplicity, you can use a library like java.util.UUID.randomUUID().
+        return UUID.randomUUID().toString();
+    }
 
     public UserEntity registerAdmin(UserEntity user) {
         // Ensures the user doesn't exist

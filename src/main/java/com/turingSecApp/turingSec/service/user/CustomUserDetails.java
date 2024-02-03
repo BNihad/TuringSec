@@ -1,4 +1,4 @@
-package com.turingSecApp.turingSec.user;
+package com.turingSecApp.turingSec.service.user;
 
 
 import com.turingSecApp.turingSec.dao.entities.role.Role;

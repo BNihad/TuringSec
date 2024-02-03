@@ -14,7 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import com.turingSecApp.turingSec.user.UserDetailsServiceImpl;
+import com.turingSecApp.turingSec.service.user.UserDetailsServiceImpl;
 
 @Configuration
 public class SecurityConfig {
@@ -49,6 +49,7 @@ public class SecurityConfig {
 
                                 .requestMatchers("/api/auth/**").permitAll() // Public endpoints for registration and login
 
+                                .requestMatchers("/api/auth/activate").permitAll() // Public endpoints for registration and login
 
 
 
