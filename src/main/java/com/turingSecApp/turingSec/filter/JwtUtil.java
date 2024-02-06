@@ -31,9 +31,11 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .claim("authorities", authorities)
+                .claim("userId", userDetails.getId())  // Include user ID in the token
                 .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
     }
+
 
     public boolean validateToken(String token) {
         try {

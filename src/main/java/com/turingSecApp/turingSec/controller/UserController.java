@@ -99,4 +99,10 @@ public class UserController {
         String token = jwtTokenProvider.generateToken(authentication);
         return ResponseEntity.ok(token);
     }
+
+    @GetMapping("/test")
+    public String test() {
+
+        return "test passed";
+    }
 }

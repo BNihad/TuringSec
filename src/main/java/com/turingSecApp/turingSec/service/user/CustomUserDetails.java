@@ -21,7 +21,7 @@ public class CustomUserDetails extends User {
     }
 
     private static Collection<? extends GrantedAuthority> getAuthorities(Set<Role> roles) {
-        // Convert  roles to a list of GrantedAuthority objects
+        // Convert roles to a list of GrantedAuthority objects
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
                 .collect(Collectors.toList());
@@ -29,5 +29,9 @@ public class CustomUserDetails extends User {
 
     public UserEntity getUser() {
         return user;
+    }
+
+    public Long getId() {
+        return user.getId();
     }
 }

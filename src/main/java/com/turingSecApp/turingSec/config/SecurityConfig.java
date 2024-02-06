@@ -51,6 +51,7 @@ public class SecurityConfig {
 
                                 .requestMatchers("/api/auth/activate").permitAll() // Public endpoints for registration and login
 
+                                .requestMatchers("/api/auth/test").permitAll() // Public endpoints for registration and login
 
 
 
