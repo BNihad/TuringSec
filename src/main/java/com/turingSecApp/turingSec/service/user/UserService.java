@@ -8,6 +8,7 @@ import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
 import com.turingSecApp.turingSec.dao.repository.HackerRepository;
 import com.turingSecApp.turingSec.dao.repository.RoleRepository;
 import com.turingSecApp.turingSec.dao.repository.UserRepository;
+import com.turingSecApp.turingSec.exception.EmailAlreadyExistsException;
 import com.turingSecApp.turingSec.exception.UserAlreadyExistsException;
 import com.turingSecApp.turingSec.service.EmailNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +45,21 @@ public class UserService {
 
     public ResponseEntity<?> registerHacker(UserEntity user) {
 
+
+
         // Ensure the user doesn't exist
         if (userRepository.findByUsername(user.getUsername()) != null) {
             throw new UserAlreadyExistsException("Username is already taken.");
 
         }
+
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            throw new EmailAlreadyExistsException("Email is already taken.");
+
+        }
+
+
+
 
         // Encode the password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -96,7 +107,7 @@ public class UserService {
         userRepository.save(user);
 
         // Send activation email
-        String activationLink = "3.95.116.98/api/auth/activate?token=" + activationToken;
+        String activationLink = "https://turingsec-production.up.railway.app/api/auth/activate?token=" + activationToken;
         String subject = "Activate Your Account";
         String content = "Dear " + user.getFirst_name() + ",\n\n"
                 + "Thank you for registering with our application. Please click the link below to activate your account:\n\n"
