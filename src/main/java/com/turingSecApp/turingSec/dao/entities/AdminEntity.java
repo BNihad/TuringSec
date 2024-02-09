@@ -1,41 +1,32 @@
-package com.turingSecApp.turingSec.dao.entities.user;
+package com.turingSecApp.turingSec.dao.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.turingSecApp.turingSec.dao.entities.role.Role;
+import com.turingSecApp.turingSec.dao.entities.role.UserRoles;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity
-@Table(name = "users")
-public class UserEntity {
+@Table(name = "admins")
+public class AdminEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String first_name;
     private String last_name;
-    private String country;
-
-
     private String username;
-
     private String password;
     private String email;
-
-
-    @Column(name = "activation_token")
-    private String activationToken;
-
-    @Column(name = "activated")
-    private boolean activated;
 
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -46,6 +37,5 @@ public class UserEntity {
     )
     @JsonIgnore
     private Set<Role> roles;
-
 
 }

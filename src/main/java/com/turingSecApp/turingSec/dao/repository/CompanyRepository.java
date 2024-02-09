@@ -1,12 +1,10 @@
 package com.turingSecApp.turingSec.dao.repository;
 
-
-import com.turingSecApp.turingSec.dao.entities.HackerEntity;
+import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface HackerRepository extends JpaRepository<HackerEntity, Long> {
-
+public interface CompanyRepository extends JpaRepository<CompanyEntity, Long> {
 
 }

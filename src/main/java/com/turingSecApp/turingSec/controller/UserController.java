@@ -2,10 +2,13 @@ package com.turingSecApp.turingSec.controller;
 
 
 import com.turingSecApp.turingSec.Request.LoginRequest;
+import com.turingSecApp.turingSec.dao.entities.AdminEntity;
+import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
 import com.turingSecApp.turingSec.dao.repository.RoleRepository;
 import com.turingSecApp.turingSec.dao.repository.UserRepository;
 import com.turingSecApp.turingSec.filter.JwtUtil;
+import com.turingSecApp.turingSec.service.user.CustomUserDetails;
 import com.turingSecApp.turingSec.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,12 +19,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
-
-import static org.springframework.http.HttpStatus.CONFLICT;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -83,26 +87,55 @@ public class UserController {
     }
 
 
-    @PostMapping("/register/admin")
-    public ResponseEntity<UserEntity> registerAdmin(@RequestBody UserEntity user) {
-        user.setRoles(Collections.singleton(roleRepository.findByName("ADMIN")));
-        UserEntity registeredUser = userService.registerAdmin(user);
-        return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
-    }
+//    @PostMapping("/register/admin")
+//    public ResponseEntity<UserEntity> registerAdmin(@RequestBody UserEntity user) {
+//        user.setRoles(Collections.singleton(roleRepository.findByName("ADMIN")));
+//        UserEntity registeredUser = userService.registerAdmin(user);
+//        return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
+//    }
 
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody LoginRequest user) {
+    public ResponseEntity<Map<String, String>> loginUser(@RequestBody LoginRequest user) {
+        // Authenticate user
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtTokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(token);
-    }
 
+        // Retrieve the authenticated user details
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        // Generate token using the userDetails
+        String token = jwtTokenProvider.generateToken(userDetails);
+
+        // Retrieve the user ID from CustomUserDetails
+        Long userId = null;
+        if (userDetails instanceof CustomUserDetails) {
+            userId = ((CustomUserDetails) userDetails).getId();
+        }
+
+        // Create a response map containing the token and user ID
+        Map<String, String> response = new HashMap<>();
+        response.put("access_token", token);
+        response.put("userId", String.valueOf(userId));
+
+        return ResponseEntity.ok(response);
+    }
     @GetMapping("/test")
     public String test() {
 
         return "test passed";
+    }
+
+
+
+
+
+
+    @PostMapping("/register/company")
+    public ResponseEntity<?> registerCompany(@RequestBody CompanyEntity company) {
+        // Register the company with pending approval
+        ResponseEntity<?> registeredCompany = userService.registerCompany(company);
+        return new ResponseEntity<>(registeredCompany, HttpStatus.CREATED);
     }
 }

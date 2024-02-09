@@ -1,40 +1,42 @@
 package com.turingSecApp.turingSec.service.user;
 
 
-
-import com.turingSecApp.turingSec.dao.entities.hacker.HackerEntity;
+import com.turingSecApp.turingSec.dao.entities.AdminEntity;
+import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
+import com.turingSecApp.turingSec.dao.entities.HackerEntity;
 import com.turingSecApp.turingSec.dao.entities.role.Role;
 import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
-import com.turingSecApp.turingSec.dao.repository.HackerRepository;
-import com.turingSecApp.turingSec.dao.repository.RoleRepository;
-import com.turingSecApp.turingSec.dao.repository.UserRepository;
+import com.turingSecApp.turingSec.dao.repository.*;
 import com.turingSecApp.turingSec.exception.EmailAlreadyExistsException;
 import com.turingSecApp.turingSec.exception.UserAlreadyExistsException;
 import com.turingSecApp.turingSec.service.EmailNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.NotFoundException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import static org.springframework.http.HttpStatus.CONFLICT;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AdminRepository adminRepository;
 
     @Autowired
     private HackerRepository hackerRepository;
 
+
+    @Autowired
+    private CompanyRepository companyRepository;
+
     @Autowired
     private RoleRepository roleRepository;
-
 
 
     @Autowired
@@ -44,7 +46,6 @@ public class UserService {
     PasswordEncoder passwordEncoder;
 
     public ResponseEntity<?> registerHacker(UserEntity user) {
-
 
 
         // Ensure the user doesn't exist
@@ -57,8 +58,6 @@ public class UserService {
             throw new EmailAlreadyExistsException("Email is already taken.");
 
         }
-
-
 
 
         // Encode the password
@@ -86,6 +85,38 @@ public class UserService {
         return ResponseEntity.ok(user);
     }
 
+    /////////
+    public ResponseEntity<?> registerCompany(CompanyEntity company) {
+        // Save the company information with pending approval status
+        company.setApproved(false);
+        company = companyRepository.save(company);
+
+        // Notify administrators about the new company registration
+        notifyAdminsForApproval(company);
+
+        return ResponseEntity.ok(company);
+    }
+
+    private void notifyAdminsForApproval(CompanyEntity company) {
+        // Get a list of administrators from the database or any other source
+        List<AdminEntity> admins = adminRepository.findAll(); // Assuming you have an AdminRepository
+
+        // Compose the email message
+        String subject = "New Company Registration for Approval";
+        String content = "A new company has registered and requires approval.\n\n"
+                + "Company Name: " + company.getCompany_name() + "\n"
+                + "Contact Person: " + company.getFirst_name() + "\n"
+                + "Job Title: " + company.getJob_title() + "\n\n"
+                + "Please login to the admin panel to review and approve.";
+
+        // Send email notification to each admin
+        for (AdminEntity admin : admins) {
+            emailNotificationService.sendEmail(admin.getEmail(), subject, content);
+        }
+    }
+
+
+    /////////////
     public boolean activateAccount(String token) {
         // Retrieve user by activation token
         UserEntity user = userRepository.findByActivationToken(token);
@@ -125,22 +156,6 @@ public class UserService {
         return UUID.randomUUID().toString();
     }
 
-    public UserEntity registerAdmin(UserEntity user) {
-        // Ensures the user doesn't exist
-        if (userRepository.findByUsername(user.getUsername()) != null) {
-            throw new UserAlreadyExistsException("Username is already taken.");
-        }
 
-        // Encode the password
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        // Set user roles
-        Set<Role> roles = new HashSet<>();
-        roles.add(roleRepository.findByName("ADMIN")); // Change to ROLE_AUTHOR for authors
-        user.setRoles(roles);
-
-        // Save the user
-        return userRepository.save(user);
-    }
 }
 

@@ -3,6 +3,7 @@ package com.turingSecApp.turingSec.config;
 
 import com.turingSecApp.turingSec.filter.JwtAuthenticationFilter;
 import com.turingSecApp.turingSec.filter.JwtUtil;
+import com.turingSecApp.turingSec.service.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import com.turingSecApp.turingSec.service.user.UserDetailsServiceImpl;
 
 @Configuration
 public class SecurityConfig {
@@ -52,8 +52,9 @@ public class SecurityConfig {
                                 .requestMatchers("/api/auth/activate").permitAll() // Public endpoints for registration and login
 
                                 .requestMatchers("/api/auth/test").permitAll() // Public endpoints for registration and login
-
-
+                                .requestMatchers("/api/admin/register").permitAll() // Public endpoints for registration and login
+                                .requestMatchers("/api/admin/approve-company/{companyId}").hasAuthority("ROLE_ADMIN")// Public endpoints for registration and login
+                                .requestMatchers("/api/admin/login").permitAll() // Public endpoints for registration and login
 
 
                 )

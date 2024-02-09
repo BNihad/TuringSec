@@ -1,5 +1,6 @@
 package com.turingSecApp.turingSec.filter;
 
+import com.turingSecApp.turingSec.service.user.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,7 +9,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
-import com.turingSecApp.turingSec.service.user.UserDetailsServiceImpl;
 
 import java.io.IOException;
 
