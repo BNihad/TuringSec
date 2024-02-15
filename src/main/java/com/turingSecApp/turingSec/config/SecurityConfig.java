@@ -47,15 +47,17 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
 
-                                .requestMatchers("/api/auth/**").permitAll() // Public endpoints for registration and login
 
                                 .requestMatchers("/api/auth/activate").permitAll() // Public endpoints for registration and login
+                                .requestMatchers("/api/auth/login").permitAll() // Public endpoints for registration and login
+                                .requestMatchers("/api/auth/register/hacker").permitAll() // Public endpoints for registration and login
 
-                                .requestMatchers("/api/auth/test").permitAll() // Public endpoints for registration and login
                                 .requestMatchers("/api/admin/register").permitAll() // Public endpoints for registration and login
                                 .requestMatchers("/api/admin/approve-company/{companyId}").hasAuthority("ROLE_ADMIN")// Public endpoints for registration and login
                                 .requestMatchers("/api/admin/login").permitAll() // Public endpoints for registration and login
+                                .requestMatchers("/api/auth/update-profile").authenticated()
 
+                                .requestMatchers("/api/auth/test").authenticated()
 
                 )
                 .csrf(AbstractHttpConfigurer::disable)

@@ -2,9 +2,12 @@ package com.turingSecApp.turingSec.controller;
 
 
 import com.turingSecApp.turingSec.Request.LoginRequest;
+import com.turingSecApp.turingSec.Request.UserUpdateRequest;
 import com.turingSecApp.turingSec.dao.entities.AdminEntity;
 import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
+import com.turingSecApp.turingSec.dao.entities.HackerEntity;
 import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
+import com.turingSecApp.turingSec.dao.repository.HackerRepository;
 import com.turingSecApp.turingSec.dao.repository.RoleRepository;
 import com.turingSecApp.turingSec.dao.repository.UserRepository;
 import com.turingSecApp.turingSec.exception.UserNotActivatedException;
@@ -50,6 +53,8 @@ public class UserController {
     private AuthenticationManager authenticationManager;
 
 
+    @Autowired
+    private HackerRepository hackerRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -161,4 +166,54 @@ public class UserController {
         ResponseEntity<?> registeredCompany = userService.registerCompany(company);
         return new ResponseEntity<>(registeredCompany, HttpStatus.CREATED);
     }
+
+
+
+
+    @PostMapping("/update-profile")
+    public ResponseEntity<?> updateProfile(@RequestBody UserUpdateRequest profileUpdateRequest) {
+        // Get the authenticated user details from the security context
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Extract the username from the authenticated user details
+        String username = userDetails.getUsername();
+
+        // Retrieve the user entity from the repository based on the username
+        UserEntity userEntity = userRepository.findByUsername(username);
+        if (userEntity == null) {
+            // Handle case where user is not found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+
+        // Update the user's first name and last name with the new values
+        userEntity.setUsername(profileUpdateRequest.getUsername());
+
+        userEntity.setFirst_name(profileUpdateRequest.getFirst_name());
+        userEntity.setLast_name(profileUpdateRequest.getLast_name());
+        userEntity.setCountry(profileUpdateRequest.getCountry());
+
+        // Save the updated user entity
+        userRepository.save(userEntity);
+
+        // Update the corresponding HackerEntity if it exists
+        HackerEntity hackerEntity = hackerRepository.findByUser(userEntity);
+        if (hackerEntity != null) {
+            hackerEntity.setFirst_name(profileUpdateRequest.getFirst_name());
+            hackerEntity.setLast_name(profileUpdateRequest.getLast_name());
+            hackerEntity.setCountry(profileUpdateRequest.getCountry());
+            hackerEntity.setWebsite(profileUpdateRequest.getWebsite());
+            hackerEntity.setBackground_pic(profileUpdateRequest.getBackground_pic());
+            hackerEntity.setProfile_pic(profileUpdateRequest.getProfile_pic());
+            hackerEntity.setBio(profileUpdateRequest.getBio());
+            hackerEntity.setLinkedin(profileUpdateRequest.getLinkedin());
+            hackerEntity.setTwitter(profileUpdateRequest.getTwitter());
+            hackerEntity.setGithub(profileUpdateRequest.getGithub());
+
+            hackerRepository.save(hackerEntity);
+        }
+
+        return ResponseEntity.ok("Profile updated successfully.");
+    }
+
+
 }

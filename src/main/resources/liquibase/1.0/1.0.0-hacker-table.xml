@@ -13,6 +13,14 @@
             <column name="first_name" type="VARCHAR(255)"/>
             <column name="last_name" type="VARCHAR(255)"/>
             <column name="country" type="VARCHAR(255)"/>
+            <column name="website" type="VARCHAR(255)" defaultOnNull="true"/>
+            <column name="background_pic" type="VARCHAR(255)" defaultOnNull="true"/>
+            <column name="profile_pic" type="VARCHAR(255)" defaultOnNull="true"/>
+            <column name="bio" type="VARCHAR(255)" defaultOnNull="true"/>
+            <column name="linkedin" type="VARCHAR(255)" defaultOnNull="true"/>
+            <column name="twitter" type="VARCHAR(255)" defaultOnNull="true"/>
+            <column name="github" type="VARCHAR(255)" defaultOnNull="true"/>
+            <column name="city" type="VARCHAR(255)" defaultOnNull="true"/>
 
         </createTable>
     </changeSet>
