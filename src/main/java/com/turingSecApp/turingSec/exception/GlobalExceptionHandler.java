@@ -25,4 +25,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleBadCredentials(BadCredentialsException em) {
         return new ResponseEntity<>(em.getMessage(), HttpStatus.CONFLICT);
     }
+
+
+    @ExceptionHandler(UserNotActivatedException.class)
+    public ResponseEntity<String> handleUserNotActivatedException(UserNotActivatedException em) {
+        return new ResponseEntity<>(em.getMessage(), HttpStatus.CONFLICT);
+    }
 }

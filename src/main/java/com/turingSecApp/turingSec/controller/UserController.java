@@ -7,6 +7,7 @@ import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
 import com.turingSecApp.turingSec.dao.repository.RoleRepository;
 import com.turingSecApp.turingSec.dao.repository.UserRepository;
+import com.turingSecApp.turingSec.exception.UserNotActivatedException;
 import com.turingSecApp.turingSec.filter.JwtUtil;
 import com.turingSecApp.turingSec.service.user.CustomUserDetails;
 import com.turingSecApp.turingSec.service.user.UserService;
@@ -117,6 +118,11 @@ public class UserController {
 
         // Authenticate user if found
         if (userEntity != null && passwordEncoder.matches(user.getPassword(), userEntity.getPassword())) {
+            // Check if the user is activated
+            if (!userEntity.isActivated()) {
+                throw new UserNotActivatedException("User is not activated yet.");
+            }
+
             // Generate token using the user details
             UserDetails userDetails = new CustomUserDetails(userEntity);
             String token = jwtTokenProvider.generateToken(userDetails);
@@ -135,6 +141,7 @@ public class UserController {
             throw new BadCredentialsException("Invalid username/email or password.");
         }
     }
+
 
 
     @GetMapping("/test")
