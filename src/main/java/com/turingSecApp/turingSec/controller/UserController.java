@@ -14,12 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -45,6 +47,14 @@ public class UserController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
+
 
     @PostMapping("/register/hacker")
     public ResponseEntity<?> registerHacker(@RequestBody UserEntity user) {
@@ -97,30 +107,36 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> loginUser(@RequestBody LoginRequest user) {
-        // Authenticate user
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // Check if the input is an email
+        UserEntity userEntity = userRepository.findByEmail(user.getUsernameOrEmail());
 
-        // Retrieve the authenticated user details
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        // Generate token using the userDetails
-        String token = jwtTokenProvider.generateToken(userDetails);
-
-        // Retrieve the user ID from CustomUserDetails
-        Long userId = null;
-        if (userDetails instanceof CustomUserDetails) {
-            userId = ((CustomUserDetails) userDetails).getId();
+        // If the input is not an email, check if it's a username
+        if (userEntity == null) {
+            userEntity = userRepository.findByUsername(user.getUsernameOrEmail());
         }
 
-        // Create a response map containing the token and user ID
-        Map<String, String> response = new HashMap<>();
-        response.put("access_token", token);
-        response.put("userId", String.valueOf(userId));
+        // Authenticate user if found
+        if (userEntity != null && passwordEncoder.matches(user.getPassword(), userEntity.getPassword())) {
+            // Generate token using the user details
+            UserDetails userDetails = new CustomUserDetails(userEntity);
+            String token = jwtTokenProvider.generateToken(userDetails);
 
-        return ResponseEntity.ok(response);
+            // Retrieve the user ID from CustomUserDetails
+            Long userId = ((CustomUserDetails) userDetails).getId();
+
+            // Create a response map containing the token and user ID
+            Map<String, String> response = new HashMap<>();
+            response.put("access_token", token);
+            response.put("userId", String.valueOf(userId));
+
+            return ResponseEntity.ok(response);
+        } else {
+            // Authentication failed
+            throw new BadCredentialsException("Invalid username/email or password.");
+        }
     }
+
+
     @GetMapping("/test")
     public String test() {
 

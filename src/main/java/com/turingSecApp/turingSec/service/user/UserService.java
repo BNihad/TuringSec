@@ -157,5 +157,19 @@ public class UserService {
     }
 
 
+
+
+
+
+    public String findUsernameByEmail(String email) {
+        UserEntity user = userRepository.findByEmail(email);
+        if (user != null) {
+            return user.getUsername();
+        } else {
+            // Handle the case where the email is not found
+            // You may throw an exception or return null based on your application's requirements
+            return null;
+        }
+    }
 }
 
