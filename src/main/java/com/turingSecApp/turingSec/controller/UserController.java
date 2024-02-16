@@ -201,6 +201,8 @@ public class UserController {
             hackerEntity.setFirst_name(profileUpdateRequest.getFirst_name());
             hackerEntity.setLast_name(profileUpdateRequest.getLast_name());
             hackerEntity.setCountry(profileUpdateRequest.getCountry());
+            hackerEntity.setCity(profileUpdateRequest.getCity());
+
             hackerEntity.setWebsite(profileUpdateRequest.getWebsite());
             hackerEntity.setBackground_pic(profileUpdateRequest.getBackground_pic());
             hackerEntity.setProfile_pic(profileUpdateRequest.getProfile_pic());
