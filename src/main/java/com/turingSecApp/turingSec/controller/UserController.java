@@ -1,16 +1,19 @@
 package com.turingSecApp.turingSec.controller;
 
 
+import com.turingSecApp.turingSec.Request.ChangeEmailRequest;
+import com.turingSecApp.turingSec.Request.ChangePasswordRequest;
 import com.turingSecApp.turingSec.Request.LoginRequest;
 import com.turingSecApp.turingSec.Request.UserUpdateRequest;
 import com.turingSecApp.turingSec.dao.entities.AdminEntity;
 import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.entities.HackerEntity;
+import com.turingSecApp.turingSec.dao.entities.role.Role;
 import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
 import com.turingSecApp.turingSec.dao.repository.HackerRepository;
 import com.turingSecApp.turingSec.dao.repository.RoleRepository;
 import com.turingSecApp.turingSec.dao.repository.UserRepository;
-import com.turingSecApp.turingSec.exception.UserNotActivatedException;
+import com.turingSecApp.turingSec.exception.*;
 import com.turingSecApp.turingSec.filter.JwtUtil;
 import com.turingSecApp.turingSec.service.user.CustomUserDetails;
 import com.turingSecApp.turingSec.service.user.UserService;
@@ -29,9 +32,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -63,10 +64,51 @@ public class UserController {
 
 
     @PostMapping("/register/hacker")
-    public ResponseEntity<?> registerHacker(@RequestBody UserEntity user) {
-        ResponseEntity<?> registeredUser = userService.registerHacker(user);
+    public ResponseEntity<Map<String, String>> registerHacker(@RequestBody UserEntity user) {
+        // Ensure the user doesn't exist
+        if (userRepository.findByUsername(user.getUsername()) != null) {
+            throw new UserAlreadyExistsException("Username is already taken.");
+        }
 
-        return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            throw new EmailAlreadyExistsException("Email is already taken.");
+        }
+
+        // Encode the password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        // Set user roles
+        Set<Role> roles = new HashSet<>();
+        roles.add(roleRepository.findByName("HACKER"));
+        user.setRoles(roles);
+
+        // Save the user
+        user = userRepository.save(user);
+
+        // Create and associate a hackerEntity entity
+        HackerEntity hackerEntity = new HackerEntity();
+        hackerEntity.setUser(user);
+        hackerEntity.setFirst_name(user.getFirst_name()); // Set the username in the hackerEntity entity
+        hackerEntity.setLast_name(user.getLast_name()); // Set the age in the hackerEntity entity
+        hackerEntity.setCountry(user.getCountry()); // Set the age in the hackerEntity entity
+        hackerRepository.save(hackerEntity);
+
+        // Send activation email
+        userService.sendActivationEmail(user);
+
+        // Generate token for the registered user
+        UserDetails userDetails = new CustomUserDetails(user);
+        String token = jwtTokenProvider.generateToken(userDetails);
+
+        // Retrieve the user ID from CustomUserDetails
+        Long userId = ((CustomUserDetails) userDetails).getId();
+
+        // Create a response map containing the token and user ID
+        Map<String, String> response = new HashMap<>();
+        response.put("access_token", token);
+        response.put("userId", String.valueOf(userId));
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/current-user")
@@ -225,4 +267,83 @@ public class UserController {
     }
 
 
+
+
+
+
+    @PostMapping("/change-email")
+    public ResponseEntity<?> changeEmail(@RequestBody ChangeEmailRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            UserEntity user = userRepository.findByUsername(username);
+
+            // Validate password
+            if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password");
+            }
+
+            // Update email
+            user.setEmail(request.getNewEmail());
+            userRepository.save(user);
+
+            return ResponseEntity.ok("Email updated successfully");
+        } else {
+            // Handle case where user is not authenticated
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+    }
+
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            UserEntity user = userRepository.findByUsername(username);
+
+            // Validate current password
+            if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect current password");
+            }
+
+            // Validate new password and confirm new password
+            if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("New password and confirm new password do not match");
+            }
+
+            // Update password
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+
+            return ResponseEntity.ok("Password updated successfully");
+        } else {
+            // Handle case where user is not authenticated
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+    }
+
+
+
+
+
+    @DeleteMapping("/delete-user")
+    public ResponseEntity<String> deleteUser() {
+        // Get the authenticated user's username from the security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        // Find the user by username
+        UserEntity user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UserNotFoundException("User with username " + username + " not found");
+        }
+
+        // Delete the user
+        userRepository.delete(user);
+
+        return ResponseEntity.ok("User deleted successfully");
+    }
 }

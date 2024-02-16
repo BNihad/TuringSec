@@ -131,7 +131,7 @@ public class UserService {
         return false;
     }
 
-    private void sendActivationEmail(UserEntity user) {
+    public void sendActivationEmail(UserEntity user) {
         // Generate activation token and save it to the user entity
         String activationToken = generateActivationToken();
         user.setActivationToken(activationToken);

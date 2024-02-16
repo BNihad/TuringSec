@@ -31,4 +31,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUserNotActivatedException(UserNotActivatedException em) {
         return new ResponseEntity<>(em.getMessage(), HttpStatus.CONFLICT);
     }
+
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException em) {
+        return new ResponseEntity<>(em.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException em) {
+        return new ResponseEntity<>(em.getMessage(), HttpStatus.CONFLICT);
+    }
 }

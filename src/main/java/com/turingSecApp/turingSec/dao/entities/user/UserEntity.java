@@ -1,6 +1,7 @@
 package com.turingSecApp.turingSec.dao.entities.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.turingSecApp.turingSec.dao.entities.HackerEntity;
 import com.turingSecApp.turingSec.dao.entities.role.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -47,5 +48,6 @@ public class UserEntity {
     @JsonIgnore
     private Set<Role> roles;
 
-
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private HackerEntity hacker;
 }
