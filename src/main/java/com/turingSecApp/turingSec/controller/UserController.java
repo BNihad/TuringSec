@@ -19,16 +19,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -70,11 +70,18 @@ public class UserController {
     }
 
     @GetMapping("/current-user")
-    public ResponseEntity<UserEntity> getCurrentUser(@AuthenticationPrincipal User user) {
-        // Retrieve the currently authenticated user from the security context
-        UserEntity currentUser = userRepository.findByUsername(user.getUsername());
+    public UserEntity getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        return ResponseEntity.ok(currentUser);
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            // Retrieve user details from the database
+            return userRepository.findByUsername(username);
+        } else {
+            // Handle case where user is not authenticated
+            // You might return an error response or throw an exception
+            return null;
+        }
     }
 
 
