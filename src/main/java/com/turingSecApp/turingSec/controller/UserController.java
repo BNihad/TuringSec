@@ -36,7 +36,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*") // Add this line to allow requests from all origins
 public class UserController {
     @Autowired
     private UserService userService;
@@ -152,12 +152,7 @@ public class UserController {
     }
 
 
-//    @PostMapping("/register/admin")
-//    public ResponseEntity<UserEntity> registerAdmin(@RequestBody UserEntity user) {
-//        user.setRoles(Collections.singleton(roleRepository.findByName("ADMIN")));
-//        UserEntity registeredUser = userService.registerAdmin(user);
-//        return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
-//    }
+
 
 
     @PostMapping("/login")
