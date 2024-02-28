@@ -1,6 +1,7 @@
 package com.turingSecApp.turingSec.dao.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -41,5 +42,8 @@ public class ReportsEntity {
     @Column(name = "discovery_details")
     private String discoveryDetails;
 
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private UserEntity user;
 }

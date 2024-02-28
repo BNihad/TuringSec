@@ -60,7 +60,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/admin/approve-company/{companyId}").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers("/api/admin/login").permitAll() // Public endpoints for registration and login
                                 .requestMatchers("/api/auth/update-profile").authenticated()
-                                .requestMatchers("/api/bug-bounty-reports").authenticated()
+                                .requestMatchers("/api/bug-bounty-reports/**").authenticated()
 
                                 .requestMatchers("/api/auth/test").authenticated()
 

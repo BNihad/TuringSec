@@ -1,10 +1,14 @@
 package com.turingSecApp.turingSec.controller;
 
 import com.turingSecApp.turingSec.dao.entities.ReportsEntity;
+import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
+import com.turingSecApp.turingSec.dao.repository.UserRepository;
 import com.turingSecApp.turingSec.service.BugBountyReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,6 +16,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/bug-bounty-reports")
 public class BugBountyReportController {
+    @Autowired
+    private UserRepository userRepository;
 
     private final BugBountyReportService bugBountyReportService;
 
@@ -32,10 +38,29 @@ public class BugBountyReportController {
         return new ResponseEntity<>(bugBountyReport, HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<ReportsEntity> createBugBountyReport(@RequestBody ReportsEntity bugBountyReport) {
-        ReportsEntity createdReport = bugBountyReportService.createBugBountyReport(bugBountyReport);
-        return new ResponseEntity<>(createdReport, HttpStatus.CREATED);
+
+    @PostMapping("/submit")
+    public ResponseEntity<?> submitBugBountyReport(@RequestBody ReportsEntity report) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            UserEntity user = userRepository.findByUsername(username);
+
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+            }
+
+            // Set the user for the bug bounty report
+            report.setUser(user);
+
+            // Save the bug bounty report
+            bugBountyReportService.submitBugBountyReport(report);
+
+            return ResponseEntity.ok("Bug bounty report submitted successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
     }
 
     @PutMapping("/{id}")

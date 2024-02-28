@@ -1,8 +1,14 @@
 package com.turingSecApp.turingSec.service;
 
 import com.turingSecApp.turingSec.dao.entities.ReportsEntity;
+import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
 import com.turingSecApp.turingSec.dao.repository.ReportsRepository;
+import com.turingSecApp.turingSec.dao.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +17,8 @@ import java.util.Optional;
 public class BugBountyReportService {
 
     private final ReportsRepository bugBountyReportRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     public BugBountyReportService(ReportsRepository bugBountyReportRepository) {
@@ -26,10 +34,18 @@ public class BugBountyReportService {
         return bugBountyReportOptional.orElse(null);
     }
 
-    public ReportsEntity createBugBountyReport(ReportsEntity bugBountyReport) {
-        return bugBountyReportRepository.save(bugBountyReport);
+    public void submitBugBountyReport(ReportsEntity report) {
+        // You can perform any necessary validation or processing here before saving the report
+        bugBountyReportRepository.save(report);
     }
 
+    private String getUsernameFromToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            return ((UserDetails) authentication.getPrincipal()).getUsername();
+        }
+        throw new RuntimeException("Unable to extract username from JWT token");
+    }
     public ReportsEntity updateBugBountyReport(Long id, ReportsEntity updatedReport) {
         Optional<ReportsEntity> bugBountyReportOptional = bugBountyReportRepository.findById(id);
         if (bugBountyReportOptional.isPresent()) {
