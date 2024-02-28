@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.10.xsd">
+
+    <changeSet id="createBugBountyTable" author="BNihad">
+        <createTable tableName="bug_bounty_reports">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="asset" type="VARCHAR(255)"/>
+            <column name="weakness" type="VARCHAR(255)"/>
+            <column name="severity" type="VARCHAR(255)"/>
+            <column name="method_name" type="VARCHAR(255)"/>
+            <column name="proof_of_concept" type="CLOB"/>
+            <column name="discovery_details" type="CLOB"/>
+
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
