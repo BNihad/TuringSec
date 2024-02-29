@@ -1,7 +1,9 @@
 package com.turingSecApp.turingSec.controller;
 
 import com.turingSecApp.turingSec.dao.entities.BugBountyProgramEntity;
+import com.turingSecApp.turingSec.dao.repository.CompanyRepository;
 import com.turingSecApp.turingSec.service.ProgramsService;
+import com.turingSecApp.turingSec.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,11 @@ import java.util.List;
 public class BugBountyProgramController {
 
     @Autowired
+    private CompanyRepository companyRepository;
+
+    @Autowired
+    private UserService userService;
+    @Autowired
     private ProgramsService bugBountyProgramService;
 
     @PostMapping
@@ -27,6 +34,7 @@ public class BugBountyProgramController {
     @GetMapping
     public ResponseEntity<List<BugBountyProgramEntity>> getAllBugBountyPrograms() {
         List<BugBountyProgramEntity> programs = bugBountyProgramService.getAllBugBountyPrograms();
+
         return ResponseEntity.ok(programs);
     }
 
