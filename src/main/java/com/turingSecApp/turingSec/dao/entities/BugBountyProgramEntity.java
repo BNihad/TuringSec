@@ -45,5 +45,10 @@ public class BugBountyProgramEntity {
     @Column(nullable = false)
     private LocalDate launchDate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
+
+    private CompanyEntity company;
+
     // Getters and setters
 }
