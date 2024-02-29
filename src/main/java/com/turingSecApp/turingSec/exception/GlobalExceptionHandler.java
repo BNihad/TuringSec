@@ -42,4 +42,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException em) {
         return new ResponseEntity<>(em.getMessage(), HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException em) {
+        return new ResponseEntity<>(em.getMessage(), HttpStatus.CONFLICT);
+    }
 }

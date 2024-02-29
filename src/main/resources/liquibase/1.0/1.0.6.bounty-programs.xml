@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.10.xsd">
+
+    <changeSet id="createBugBountyTable" author="BNihad">
+        <createTable tableName="bug_bounty_programs">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="business_title" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="policy_url" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reports_resolved" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="assets_eligible" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="low_severity" type="varchar(255)"/>
+            <column name="medium_severity" type="varchar(255)"/>
+            <column name="high_severity" type="varchar(255)"/>
+            <column name="critical_severity" type="varchar(255)"/>
+            <column name="from_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="to_date" type="date"/>
+            <column name="assets_in_scope" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="average_bounty" type="decimal(10,2)"/>
+            <column name="asset_type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notes" type="text"/>
+            <column name="launch_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
