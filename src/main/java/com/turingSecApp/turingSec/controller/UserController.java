@@ -8,6 +8,7 @@ import com.turingSecApp.turingSec.Request.UserUpdateRequest;
 import com.turingSecApp.turingSec.dao.entities.AdminEntity;
 import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.entities.HackerEntity;
+import com.turingSecApp.turingSec.dao.entities.ReportsEntity;
 import com.turingSecApp.turingSec.dao.entities.role.Role;
 import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
 import com.turingSecApp.turingSec.dao.repository.HackerRepository;
@@ -211,7 +212,17 @@ public class UserController {
         return new ResponseEntity<>(registeredCompany, HttpStatus.CREATED);
     }
 
+    @GetMapping
+    public ResponseEntity<List<CompanyEntity>> getAllCompanies() {
+        List<CompanyEntity> companyEntities = userService.getAllCompanies();
+        return new ResponseEntity<>(companyEntities, HttpStatus.OK);
+    }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<CompanyEntity> getCompaniesById(@PathVariable Long id) {
+        CompanyEntity companyEntity = userService.getCompaniesById(id);
+        return new ResponseEntity<>(companyEntity, HttpStatus.OK);
+    }
 
 
     @PostMapping("/update-profile")

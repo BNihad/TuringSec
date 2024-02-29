@@ -62,6 +62,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/auth/update-profile").authenticated()
                                 .requestMatchers("/api/bug-bounty-reports/**").authenticated()
                                 .requestMatchers("/api/bug-bounty-programs/**").permitAll()
+                                .requestMatchers("/api/companies/**").permitAll()
 
                                 .requestMatchers("/api/auth/test").authenticated()
 

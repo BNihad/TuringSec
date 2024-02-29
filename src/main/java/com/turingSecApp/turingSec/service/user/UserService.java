@@ -2,12 +2,14 @@ package com.turingSecApp.turingSec.service.user;
 
 
 import com.turingSecApp.turingSec.dao.entities.AdminEntity;
+import com.turingSecApp.turingSec.dao.entities.BugBountyProgramEntity;
 import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.entities.HackerEntity;
 import com.turingSecApp.turingSec.dao.entities.role.Role;
 import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
 import com.turingSecApp.turingSec.dao.repository.*;
 import com.turingSecApp.turingSec.exception.EmailAlreadyExistsException;
+import com.turingSecApp.turingSec.exception.ResourceNotFoundException;
 import com.turingSecApp.turingSec.exception.UserAlreadyExistsException;
 import com.turingSecApp.turingSec.service.EmailNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.NotFoundException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -170,6 +169,18 @@ public class UserService {
             // You may throw an exception or return null based on your application's requirements
             return null;
         }
+    }
+
+
+
+
+    public List<CompanyEntity> getAllCompanies() {
+        return companyRepository.findAll();
+    }
+
+    public CompanyEntity getCompaniesById(Long id) {
+        Optional<CompanyEntity> companyEntity = companyRepository.findById(id);
+        return companyEntity.orElseThrow(() -> new ResourceNotFoundException("Bug Bounty Program not found"));
     }
 }
 

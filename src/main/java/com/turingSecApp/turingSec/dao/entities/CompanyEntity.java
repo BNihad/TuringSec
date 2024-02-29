@@ -16,7 +16,6 @@ import lombok.Setter;
 public class CompanyEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long id;
     private String first_name;
     private String last_name;
