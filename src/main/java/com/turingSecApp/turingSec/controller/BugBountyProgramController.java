@@ -35,11 +35,6 @@ public class BugBountyProgramController {
         return ResponseEntity.ok(program);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<BugBountyProgramEntity> updateBugBountyProgram(@PathVariable Long id, @Valid @RequestBody BugBountyProgramEntity updatedProgram) {
-        BugBountyProgramEntity program = bugBountyProgramService.updateBugBountyProgram(id, updatedProgram);
-        return ResponseEntity.ok(program);
-    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBugBountyProgram(@PathVariable Long id) {

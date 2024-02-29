@@ -25,43 +25,11 @@ public class BugBountyProgramEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private String businessTitle;
-
-    @Column(nullable = false)
-    private String policyUrl;
-
-    @Column(nullable = false)
-    private Integer reportsResolved;
-
-    @Column(nullable = false)
-    private String assetsEligible;
-
-    @Column
-    private String lowSeverity;
-
-    @Column
-    private String mediumSeverity;
-
-    @Column
-    private String highSeverity;
-
-    @Column
-    private String criticalSeverity;
-
-    @Column(nullable = false)
     private LocalDate fromDate;
 
     @Column
     private LocalDate toDate;
 
-    @Column(nullable = false)
-    private String assetsInScope;
-
-    @Column(nullable = false)
-    private BigDecimal averageBounty;
 
     @Column(nullable = false)
     private String assetType;
@@ -71,6 +39,8 @@ public class BugBountyProgramEntity {
 
     @Column
     private String notes;
+    @Column
+    private String announcement;
 
     @Column(nullable = false)
     private LocalDate launchDate;
