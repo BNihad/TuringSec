@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/bug-bounty-programs")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class BugBountyProgramController {
 
     @Autowired

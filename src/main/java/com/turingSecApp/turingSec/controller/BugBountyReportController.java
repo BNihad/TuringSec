@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/bug-bounty-reports")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class BugBountyReportController {
     @Autowired
     private UserRepository userRepository;
