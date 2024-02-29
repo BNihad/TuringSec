@@ -21,7 +21,6 @@ import java.time.LocalDate;
 public class BugBountyProgramEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long id;
 
     @Column(nullable = false)
