@@ -1,11 +1,14 @@
 package com.turingSecApp.turingSec.dao.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.turingSecApp.turingSec.dao.entities.role.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -24,7 +27,17 @@ public class CompanyEntity {
     private String job_title;
     private String assets;
     private String message;
+    private String password;
 
     private boolean approved; // Indicates whether the company registration is approved
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    @JsonIgnore
+    private Set<Role> roles;
 
 }

@@ -17,6 +17,9 @@
             <column name="job_title" type="VARCHAR(255)"/>
             <column name="assets" type="VARCHAR(255)"/>
             <column name="message" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
             <column name="approved" type="BOOLEAN" defaultValueBoolean="false"/>
 
         </createTable>

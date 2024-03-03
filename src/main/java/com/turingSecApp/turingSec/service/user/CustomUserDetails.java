@@ -1,6 +1,7 @@
 package com.turingSecApp.turingSec.service.user;
 
 import com.turingSecApp.turingSec.dao.entities.AdminEntity;
+import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.entities.role.Role;
 import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,6 +26,8 @@ public class CustomUserDetails implements UserDetails {
             return getAuthoritiesFromRoles(((UserEntity) user).getRoles());
         } else if (user instanceof AdminEntity) {
             return getAuthoritiesFromRoles(((AdminEntity) user).getRoles());
+        } else if (user instanceof CompanyEntity) {
+            return getAuthoritiesFromRoles(((CompanyEntity) user).getRoles());
         } else {
             throw new IllegalStateException("Unsupported user type: " + user.getClass());
         }
@@ -42,6 +45,8 @@ public class CustomUserDetails implements UserDetails {
             return ((UserEntity) user).getPassword();
         } else if (user instanceof AdminEntity) {
             return ((AdminEntity) user).getPassword();
+        } else if (user instanceof CompanyEntity) {
+            return ((CompanyEntity) user).getPassword();
         } else {
             throw new IllegalStateException("Unsupported user type: " + user.getClass());
         }
@@ -53,6 +58,8 @@ public class CustomUserDetails implements UserDetails {
             return ((UserEntity) user).getUsername();
         } else if (user instanceof AdminEntity) {
             return ((AdminEntity) user).getUsername();
+        } else if (user instanceof CompanyEntity) {
+            return ((CompanyEntity) user).getEmail();
         } else {
             throw new IllegalStateException("Unsupported user type: " + user.getClass());
         }
@@ -87,6 +94,8 @@ public class CustomUserDetails implements UserDetails {
             return ((UserEntity) user).getId();
         } else if (user instanceof AdminEntity) {
             return ((AdminEntity) user).getId();
+        } else if (user instanceof CompanyEntity) {
+            return ((CompanyEntity) user).getId();
         } else {
             throw new IllegalStateException("Unsupported user type: " + user.getClass());
         }

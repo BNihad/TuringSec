@@ -11,6 +11,7 @@ import com.turingSecApp.turingSec.service.user.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +26,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AdminController {
     @Autowired
     private AdminService adminService;
@@ -58,14 +60,13 @@ public class AdminController {
     @PostMapping("/approve-company/{companyId}")
     public ResponseEntity<?> approveCompanyRegistration(@PathVariable Long companyId) {
         // Assuming you have a method in the CompanyService to approve company registration
-        boolean approvalResult = companyService.approveCompanyRegistration(companyId);
-        if (approvalResult) {
-            return ResponseEntity.ok("Company registration approved successfully.");
+        String generatedPassword = companyService.approveCompanyRegistration(companyId);
+        if (generatedPassword != null) {
+            return ResponseEntity.ok("Company registration approved successfully. Generated password: " + generatedPassword);
         } else {
             return ResponseEntity.badRequest().body("Failed to approve company registration.");
         }
     }
-
 
 
     @PostMapping("/login")

@@ -57,7 +57,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/auth/users/**").permitAll() // Public endpoints for registration and login
 
                                 .requestMatchers("/api/admin/register").permitAll() // Public endpoints for registration and login
-                                .requestMatchers("/api/admin/approve-company/{companyId}").hasAuthority("ROLE_ADMIN")
+                                .requestMatchers("/api/admin/approve-company/{companyId}").hasRole("ADMIN")
                                 .requestMatchers("/api/admin/login").permitAll() // Public endpoints for registration and login
                                 .requestMatchers("/api/auth/update-profile").authenticated()
                                 .requestMatchers("/api/bug-bounty-reports/**").authenticated()
