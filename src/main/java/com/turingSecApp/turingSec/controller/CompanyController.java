@@ -4,6 +4,7 @@ import com.turingSecApp.turingSec.Request.CompanyRequest;
 import com.turingSecApp.turingSec.Request.LoginRequest;
 import com.turingSecApp.turingSec.dao.entities.AdminEntity;
 import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
+import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
 import com.turingSecApp.turingSec.dao.repository.CompanyRepository;
 import com.turingSecApp.turingSec.filter.JwtUtil;
 import com.turingSecApp.turingSec.service.CompanyService;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -92,4 +95,22 @@ public class CompanyController {
         CompanyEntity companyEntity = userService.getCompaniesById(id);
         return new ResponseEntity<>(companyEntity, HttpStatus.OK);
     }
+
+
+    @GetMapping("/current-user")
+    public CompanyEntity getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            // Retrieve user details from the database
+            return companyRepository.findByEmail(username);
+        } else {
+            // Handle case where user is not authenticated
+            // You might return an error response or throw an exception
+            return null;
+        }
+    }
+
+
 }
