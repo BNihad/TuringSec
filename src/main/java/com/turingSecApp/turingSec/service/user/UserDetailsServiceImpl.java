@@ -1,8 +1,10 @@
 package com.turingSecApp.turingSec.service.user;
 
 import com.turingSecApp.turingSec.dao.entities.AdminEntity;
+import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
 import com.turingSecApp.turingSec.dao.repository.AdminRepository;
+import com.turingSecApp.turingSec.dao.repository.CompanyRepository;
 import com.turingSecApp.turingSec.dao.repository.UserRepository;
 import com.turingSecApp.turingSec.service.user.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private AdminRepository adminRepository;
 
+    @Autowired
+    private CompanyRepository companyRepository;
+
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByUsername(username);
@@ -31,6 +37,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return new CustomUserDetails(admin);
         }
 
-        throw new UsernameNotFoundException("User not found.");
+        CompanyEntity companyEntity = companyRepository.findByEmail(username);
+        if (companyEntity != null) {
+            return new CustomUserDetails(companyEntity);
+        }
+        throw new UsernameNotFoundException("Company does not found.");
     }
 }

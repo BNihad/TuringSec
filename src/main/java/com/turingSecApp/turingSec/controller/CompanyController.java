@@ -102,9 +102,9 @@ public class CompanyController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated()) {
-            String username = authentication.getName();
+            String email = authentication.getName();
             // Retrieve user details from the database
-            return companyRepository.findByEmail(username);
+            return companyRepository.findByEmail(email);
         } else {
             // Handle case where user is not authenticated
             // You might return an error response or throw an exception
