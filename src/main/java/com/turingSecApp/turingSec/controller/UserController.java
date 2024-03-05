@@ -204,27 +204,6 @@ public class UserController {
 
 
 
-
-    @PostMapping("/register/company")
-    public ResponseEntity<?> registerCompany(@RequestBody CompanyEntity company) {
-        // Register the company with pending approval
-        ResponseEntity<?> registeredCompany = userService.registerCompany(company);
-        return new ResponseEntity<>(registeredCompany, HttpStatus.CREATED);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<CompanyEntity>> getAllCompanies() {
-        List<CompanyEntity> companyEntities = userService.getAllCompanies();
-        return new ResponseEntity<>(companyEntities, HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<CompanyEntity> getCompaniesById(@PathVariable Long id) {
-        CompanyEntity companyEntity = userService.getCompaniesById(id);
-        return new ResponseEntity<>(companyEntity, HttpStatus.OK);
-    }
-
-
     @PostMapping("/update-profile")
     public ResponseEntity<?> updateProfile(@RequestBody UserUpdateRequest profileUpdateRequest) {
         // Get the authenticated user details from the security context

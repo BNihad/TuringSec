@@ -62,7 +62,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/admin/login").permitAll() // Public endpoints for registration and login
                                 .requestMatchers("/api/auth/update-profile").authenticated()
                                 .requestMatchers("/api/bug-bounty-reports/**").authenticated()
-                                .requestMatchers("/api/bug-bounty-programs/**").permitAll()
+                                .requestMatchers("/api/bug-bounty-programs/**").hasRole("COMPANY")
                                 .requestMatchers("/api/companies/**").permitAll()
 
                                 .requestMatchers("/api/auth/test").authenticated()

@@ -40,12 +40,15 @@ public class BugBountyProgramEntity {
     private String notes;
     @Column
     private String announcement;
-
-    @Column(nullable = false)
-    private LocalDate launchDate;
-
     @Column
-    private Long companyId;
+    private String launchDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id")
+    @JsonIgnore
+    private CompanyEntity company;
+
+    // Getters and setters
 
     // Getters and setters
 }

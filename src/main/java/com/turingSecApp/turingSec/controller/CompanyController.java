@@ -67,7 +67,6 @@ public class CompanyController {
             UserDetails userDetails = new CustomUserDetails(companyEntity);
             String token = jwtTokenProvider.generateToken(userDetails);
 
-            // Retrieve the user ID from CustomUserDetails
             Long userId = ((CustomUserDetails) userDetails).getId();
 
             // Create a response map containing the token and user ID
@@ -77,7 +76,6 @@ public class CompanyController {
 
             return ResponseEntity.ok(response);
         } else {
-            // Authentication failed
             throw new BadCredentialsException("Invalid username/email or password.");
         }
     }
@@ -106,8 +104,7 @@ public class CompanyController {
             // Retrieve user details from the database
             return companyRepository.findByEmail(email);
         } else {
-            // Handle case where user is not authenticated
-            // You might return an error response or throw an exception
+
             return null;
         }
     }

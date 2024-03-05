@@ -24,8 +24,6 @@ import java.util.*;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private AdminRepository adminRepository;
 
     @Autowired
     private HackerRepository hackerRepository;
@@ -85,34 +83,7 @@ public class UserService {
     }
 
     /////////
-    public ResponseEntity<?> registerCompany(CompanyEntity company) {
-        // Save the company information with pending approval status
-        company.setApproved(false);
-        company = companyRepository.save(company);
 
-        // Notify administrators about the new company registration
-        notifyAdminsForApproval(company);
-
-        return ResponseEntity.ok(company);
-    }
-
-    private void notifyAdminsForApproval(CompanyEntity company) {
-        // Get a list of administrators from the database or any other source
-        List<AdminEntity> admins = adminRepository.findAll(); // Assuming you have an AdminRepository
-
-        // Compose the email message
-        String subject = "New Company Registration for Approval";
-        String content = "A new company has registered and requires approval.\n\n"
-                + "Company Name: " + company.getCompany_name() + "\n"
-                + "Contact Person: " + company.getFirst_name() + "\n"
-                + "Job Title: " + company.getJob_title() + "\n\n"
-                + "Please login to the admin panel to review and approve.";
-
-        // Send email notification to each admin
-        for (AdminEntity admin : admins) {
-            emailNotificationService.sendEmail(admin.getEmail(), subject, content);
-        }
-    }
 
 
     /////////////

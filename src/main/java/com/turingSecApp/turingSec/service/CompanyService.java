@@ -1,8 +1,10 @@
 package com.turingSecApp.turingSec.service;
 
 import com.turingSecApp.turingSec.Response.RegistrationResponse;
+import com.turingSecApp.turingSec.dao.entities.AdminEntity;
 import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.entities.role.Role;
+import com.turingSecApp.turingSec.dao.repository.AdminRepository;
 import com.turingSecApp.turingSec.dao.repository.CompanyRepository;
 import com.turingSecApp.turingSec.dao.repository.RoleRepository;
 import com.turingSecApp.turingSec.exception.EmailAlreadyExistsException;
@@ -13,10 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.NotFoundException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class CompanyService {
@@ -26,6 +25,11 @@ public class CompanyService {
     private RoleRepository roleRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AdminRepository adminRepository;
+
+    @Autowired
+    private EmailNotificationService emailNotificationService;
 
     public String approveCompanyRegistration(Long companyId) {
         Optional<CompanyEntity> companyOptional = companyRepository.findById(companyId);
@@ -72,10 +76,32 @@ public class CompanyService {
 
         // Save the company
         companyRepository.save(company);
+        notifyAdminsForApproval(company);
 
         // Return the company entity without the generated password
         return ResponseEntity.ok(new RegistrationResponse(company));
     }
+
+
+    private void notifyAdminsForApproval(CompanyEntity company) {
+        // Get a list of administrators from the database or any other source
+        List<AdminEntity> admins = adminRepository.findAll(); // Assuming you have an AdminRepository
+
+        // Compose the email message
+        String subject = "New Company Registration for Approval";
+        String content = "A new company has registered and requires approval.\n\n"
+                + "Company Name: " + company.getCompany_name() + "\n"
+                + "Contact Person: " + company.getFirst_name() + "\n"
+                + "Job Title: " + company.getJob_title() + "\n\n"
+                + "Please login to the admin panel to review and approve.";
+
+        // Send email notification to each admin
+        for (AdminEntity admin : admins) {
+            emailNotificationService.sendEmail(admin.getEmail(), subject, content);
+        }
+    }
+
+
 
     // Other methods for managing companies
 
@@ -83,6 +109,9 @@ public class CompanyService {
         // Generate a random alphanumeric password with 12 characters
         return RandomStringUtils.randomAlphanumeric(12);
     }
+
+
+
 
 
 }
