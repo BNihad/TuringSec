@@ -4,23 +4,23 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.10.xsd">
 
-    <changeSet id="createBugBountyTable" author="BNihad">
-        <createTable tableName="bug_bounty_programs">
+    <changeSet id="createAssetTypesTable" author="BNihad">
+        <createTable tableName="asset_types">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
-            <column name="from_date" type="date">
+            <column name="level" type="varchar(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="to_date" type="date"/>
-
-            <column name="notes" type="text"/>
-            <column name="policy" type="text"/>
-
-
+            <column name="asset_type" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
-
     </changeSet>
+
 
 </databaseChangeLog>

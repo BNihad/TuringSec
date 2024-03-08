@@ -1,8 +1,13 @@
 package com.turingSecApp.turingSec.controller;
 
+import com.turingSecApp.turingSec.Request.AssetTypeDTO;
+import com.turingSecApp.turingSec.Request.BugBountyProgramWithAssetTypeDTO;
+import com.turingSecApp.turingSec.dao.entities.AssetTypeEntity;
 import com.turingSecApp.turingSec.dao.entities.BugBountyProgramEntity;
 import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
+import com.turingSecApp.turingSec.dao.repository.AssetTypeRepository;
 import com.turingSecApp.turingSec.dao.repository.CompanyRepository;
+import com.turingSecApp.turingSec.service.AssetTypeService;
 import com.turingSecApp.turingSec.service.ProgramsService;
 import com.turingSecApp.turingSec.service.user.CustomUserDetails;
 import com.turingSecApp.turingSec.service.user.UserService;
@@ -17,22 +22,25 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/bug-bounty-programs")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class BugBountyProgramController {
 
-    @Autowired
-    private CompanyRepository companyRepository;
 
-    @Autowired
-    private UserService userService;
     @Autowired
     private ProgramsService bugBountyProgramService;
+    @Autowired
+    private AssetTypeService assetTypeService;
+
+    @Autowired
+    private  CompanyRepository companyRepository;
+
 
     @PostMapping
-    public ResponseEntity<BugBountyProgramEntity> createBugBountyProgram(@Valid @RequestBody BugBountyProgramEntity program) {
+    public ResponseEntity<BugBountyProgramEntity> createBugBountyProgram(@Valid @RequestBody BugBountyProgramWithAssetTypeDTO programDTO) {
         // Get the authenticated user details
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -40,13 +48,72 @@ public class BugBountyProgramController {
         // Extract the company from the authenticated user details
         CompanyEntity company = (CompanyEntity) userDetails.getUser();
 
-        // Set the company for the bug bounty program
+        // Convert DTO to entity
+        BugBountyProgramEntity program = new BugBountyProgramEntity();
+        program.setFromDate(programDTO.getFromDate());
+        program.setToDate(programDTO.getToDate());
+        program.setNotes(programDTO.getNotes());
+        program.setPolicy(programDTO.getPolicy());
         program.setCompany(company);
 
+// Convert AssetTypeDTOs to AssetTypeEntities
+        List<AssetTypeEntity> assetTypes = programDTO.getAssetTypes().stream()
+                .map(assetTypeDTO -> {
+                    AssetTypeEntity assetTypeEntity = new AssetTypeEntity();
+                    assetTypeEntity.setLevel(assetTypeDTO.getLevel());
+                    assetTypeEntity.setAssetType(assetTypeDTO.getAssetType());
+                    assetTypeEntity.setPrice(assetTypeDTO.getPrice());
+                    assetTypeEntity.setBugBountyProgram(program);
+                    return assetTypeEntity;
+                })
+                .collect(Collectors.toList());
+
+// Set the list of asset types for the program
+        program.setAssetTypes(assetTypes);
         // Proceed with creating the bug bounty program
         BugBountyProgramEntity createdProgram = bugBountyProgramService.createBugBountyProgram(program);
         return ResponseEntity.created(URI.create("/api/bug-bounty-programs/" + createdProgram.getId())).body(createdProgram);
     }
+
+
+    @GetMapping("/assets")
+    public ResponseEntity<List<AssetTypeDTO>> getCompanyAssetTypes() {
+        // Retrieve the email of the authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+
+        // Retrieve the company associated with the authenticated user
+        CompanyEntity company = companyRepository.findByEmail(userEmail);
+
+        // Check if the company is authenticated
+        if (company != null) {
+            // Get assets belonging to the company
+            List<AssetTypeEntity> assetTypeEntities = assetTypeService.getCompanyAssetTypes(company);
+
+            // Map AssetTypeEntities to AssetTypeDTOs if necessary
+            List<AssetTypeDTO> assetTypeDTOs = assetTypeEntities.stream()
+                    .map(this::mapToDTO)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(assetTypeDTOs);
+        } else {
+            // Return unauthorized response or handle as needed
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+
+
+    // Method to map AssetTypeEntity to AssetTypeDTO if necessary
+    private AssetTypeDTO mapToDTO(AssetTypeEntity assetTypeEntity) {
+        AssetTypeDTO assetTypeDTO = new AssetTypeDTO();
+        assetTypeDTO.setLevel(assetTypeEntity.getLevel());
+        assetTypeDTO.setAssetType(assetTypeEntity.getAssetType());
+        assetTypeDTO.setPrice(assetTypeEntity.getPrice());
+        return assetTypeDTO;
+    }
+
+
     @GetMapping
     @Secured("ROLE_COMPANY")
     public ResponseEntity<List<BugBountyProgramEntity>> getAllBugBountyPrograms() {

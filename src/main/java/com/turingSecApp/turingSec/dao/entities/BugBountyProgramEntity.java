@@ -10,6 +10,8 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @AllArgsConstructor
@@ -29,26 +31,19 @@ public class BugBountyProgramEntity {
     @Column
     private LocalDate toDate;
 
-
-    @Column(nullable = false)
-    private String assetType;
-
-    @Column(nullable = false)
-    private String price;
-
     @Column
     private String notes;
+
     @Column
-    private String announcement;
-    @Column
-    private String launchDate;
+    private String policy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
     @JsonIgnore
     private CompanyEntity company;
 
-    // Getters and setters
+    @OneToMany(mappedBy = "bugBountyProgram", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AssetTypeEntity> assetTypes = new ArrayList<>();
 
     // Getters and setters
 }
