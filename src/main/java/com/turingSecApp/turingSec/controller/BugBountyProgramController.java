@@ -117,10 +117,25 @@ public class BugBountyProgramController {
     @GetMapping
     @Secured("ROLE_COMPANY")
     public ResponseEntity<List<BugBountyProgramEntity>> getAllBugBountyPrograms() {
-        List<BugBountyProgramEntity> programs = bugBountyProgramService.getAllBugBountyPrograms();
+        // Retrieve the email of the authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
 
-        return ResponseEntity.ok(programs);
+        // Retrieve the company associated with the authenticated user
+        CompanyEntity company = companyRepository.findByEmail(userEmail);
+
+        // Check if the company is authenticated
+        if (company != null) {
+            // Get programs belonging to the company
+            List<BugBountyProgramEntity> programs = bugBountyProgramService.getAllBugBountyProgramsByCompany(company);
+
+            return ResponseEntity.ok(programs);
+        } else {
+            // Return unauthorized response or handle as needed
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
+
 
     @GetMapping("/{id}")
     @Secured("ROLE_COMPANY")

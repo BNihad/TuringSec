@@ -2,6 +2,7 @@ package com.turingSecApp.turingSec.service;
 
 import com.turingSecApp.turingSec.dao.entities.AssetTypeEntity;
 import com.turingSecApp.turingSec.dao.entities.BugBountyProgramEntity;
+import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.repository.AssetTypeRepository;
 import com.turingSecApp.turingSec.dao.repository.ProgramsRepository;
 import com.turingSecApp.turingSec.exception.ResourceNotFoundException;
@@ -35,5 +36,10 @@ public class ProgramsService {
     public void deleteBugBountyProgram(Long id) {
         BugBountyProgramEntity program = getBugBountyProgramById(id);
         programsRepository.delete(program);
+    }
+
+    // Method to fetch bug bounty programs associated with a specific company
+    public List<BugBountyProgramEntity> getAllBugBountyProgramsByCompany(CompanyEntity company) {
+        return programsRepository.findByCompany(company);
     }
 }
