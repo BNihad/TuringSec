@@ -56,7 +56,7 @@ public class BugBountyProgramController {
         program.setPolicy(programDTO.getPolicy());
         program.setCompany(company);
 
-// Convert AssetTypeDTOs to AssetTypeEntities
+        // Convert AssetTypeDTOs to AssetTypeEntities
         List<AssetTypeEntity> assetTypes = programDTO.getAssetTypes().stream()
                 .map(assetTypeDTO -> {
                     AssetTypeEntity assetTypeEntity = new AssetTypeEntity();
@@ -68,11 +68,12 @@ public class BugBountyProgramController {
                 })
                 .collect(Collectors.toList());
 
-// Set the list of asset types for the program
+        // Set the list of asset types for the program
         program.setAssetTypes(assetTypes);
-        // Proceed with creating the bug bounty program
-        BugBountyProgramEntity createdProgram = bugBountyProgramService.createBugBountyProgram(program);
-        return ResponseEntity.created(URI.create("/api/bug-bounty-programs/" + createdProgram.getId())).body(createdProgram);
+
+        // Proceed with creating or updating the bug bounty program
+        BugBountyProgramEntity createdOrUpdateProgram = bugBountyProgramService.createOrUpdateBugBountyProgram(program);
+        return ResponseEntity.created(URI.create("/api/bug-bounty-programs/" + createdOrUpdateProgram.getId())).body(createdOrUpdateProgram);
     }
 
 
