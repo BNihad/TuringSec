@@ -56,6 +56,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/auth/current-user").authenticated() // Public endpoints for registration and login
                                 .requestMatchers("/api/auth/users/**").permitAll() // Public endpoints for registration and login
                                 .requestMatchers("/api/companies/current-user").authenticated() // Public endpoints for registration and login
+                                .requestMatchers("/api/auth/programs").permitAll() // Public endpoints for registration and login
 
                                 .requestMatchers("/api/admin/register").permitAll() // Public endpoints for registration and login
                                 .requestMatchers("/api/admin/approve-company/{companyId}").hasRole("ADMIN")

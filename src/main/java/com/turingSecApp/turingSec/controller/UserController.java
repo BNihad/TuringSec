@@ -5,10 +5,7 @@ import com.turingSecApp.turingSec.Request.ChangeEmailRequest;
 import com.turingSecApp.turingSec.Request.ChangePasswordRequest;
 import com.turingSecApp.turingSec.Request.LoginRequest;
 import com.turingSecApp.turingSec.Request.UserUpdateRequest;
-import com.turingSecApp.turingSec.dao.entities.AdminEntity;
-import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
-import com.turingSecApp.turingSec.dao.entities.HackerEntity;
-import com.turingSecApp.turingSec.dao.entities.ReportsEntity;
+import com.turingSecApp.turingSec.dao.entities.*;
 import com.turingSecApp.turingSec.dao.entities.role.Role;
 import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
 import com.turingSecApp.turingSec.dao.repository.HackerRepository;
@@ -16,11 +13,14 @@ import com.turingSecApp.turingSec.dao.repository.RoleRepository;
 import com.turingSecApp.turingSec.dao.repository.UserRepository;
 import com.turingSecApp.turingSec.exception.*;
 import com.turingSecApp.turingSec.filter.JwtUtil;
+import com.turingSecApp.turingSec.service.BugBountyReportService;
+import com.turingSecApp.turingSec.service.ProgramsService;
 import com.turingSecApp.turingSec.service.user.CustomUserDetails;
 import com.turingSecApp.turingSec.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 
@@ -52,7 +52,7 @@ public class UserController {
     private JwtUtil jwtTokenProvider;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private ProgramsService programsService;
 
 
     @Autowired
@@ -331,4 +331,14 @@ public class UserController {
 
         return ResponseEntity.ok("User deleted successfully");
     }
+
+
+
+    @GetMapping("/programs")
+    public ResponseEntity<List<BugBountyProgramEntity>> getAllBugBountyPrograms() {
+        List<BugBountyProgramEntity> programs = programsService.getAllBugBountyPrograms();
+
+        return ResponseEntity.ok(programs);
+    }
+
 }
