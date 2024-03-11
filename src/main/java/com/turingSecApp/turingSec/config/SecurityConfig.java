@@ -63,11 +63,18 @@ public class SecurityConfig {
                                 .requestMatchers("/api/admin/approve-company/{companyId}").hasRole("ADMIN")
                                 .requestMatchers("/api/admin/login").permitAll() // Public endpoints for registration and login
                                 .requestMatchers("/api/auth/update-profile").authenticated()
-                                .requestMatchers("/api/bug-bounty-reports/**").hasRole("HACKER")
+
+                                .requestMatchers("/api/bug-bounty-reports/submit").hasRole("HACKER")
+                                .requestMatchers("/api/bug-bounty-reports/user").hasRole("HACKER")
+                                .requestMatchers("/api/bug-bounty-reports/{id}").hasRole("HACKER")
+                                .requestMatchers("/api/bug-bounty-reports/company").hasRole("COMPANY")
+
+
                                 .requestMatchers("/api/bug-bounty-programs/**").hasRole("COMPANY")
                                 .requestMatchers("/api/companies/**").permitAll()
 
                                 .requestMatchers("/api/auth/test").authenticated()
+
 
                                 .requestMatchers("/api/auth/change-email").authenticated()
                                 .requestMatchers("/api/auth/change-password").authenticated()

@@ -41,7 +41,7 @@ public class CompanyEntity {
     @JsonIgnore
     private Set<Role> roles;
 
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<BugBountyProgramEntity> bugBountyPrograms;
 
