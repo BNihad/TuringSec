@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,4 +66,23 @@ public class BugBountyReportService {
     public void deleteBugBountyReport(Long id) {
         bugBountyReportRepository.deleteById(id);
     }
+
+
+
+    public List<ReportsEntity> getAllReportsByUser() {
+        // Retrieve the username of the authenticated user
+        String username = getUsernameFromToken();
+
+        // Find the user by username
+        UserEntity user = userRepository.findByUsername(username);
+
+        // If user found, get all reports associated with that user
+        if (user != null) {
+            return bugBountyReportRepository.findByUser(user);
+        } else {
+            // If user not found, return an empty list or handle as needed
+            return Collections.emptyList();
+        }
+    }
+
 }

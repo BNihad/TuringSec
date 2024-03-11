@@ -76,4 +76,10 @@ public class BugBountyReportController {
         bugBountyReportService.deleteBugBountyReport(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/user")
+    public ResponseEntity<List<ReportsEntity>> getAllBugBountyReportsByUser() {
+        List<ReportsEntity> userReports = bugBountyReportService.getAllReportsByUser();
+        return new ResponseEntity<>(userReports, HttpStatus.OK);
+    }
 }

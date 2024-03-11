@@ -13,11 +13,14 @@ import java.util.List;
 @Getter
 @Setter
 public class BugBountyProgramWithAssetTypeDTO {
+    private Long id; // New field for company ID
+
     private LocalDate fromDate;
     private LocalDate toDate;
     private String notes;
     private String policy;
     private List<AssetTypeDTO> assetTypes;
+    private Long companyId; // New field for company ID
 
 
 

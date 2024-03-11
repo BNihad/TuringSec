@@ -76,7 +76,6 @@ public class BugBountyProgramController {
         return ResponseEntity.created(URI.create("/api/bug-bounty-programs/" + createdOrUpdateProgram.getId())).body(createdOrUpdateProgram);
     }
 
-
     @GetMapping("/assets")
     public ResponseEntity<List<AssetTypeDTO>> getCompanyAssetTypes() {
         // Retrieve the email of the authenticated user
@@ -91,9 +90,13 @@ public class BugBountyProgramController {
             // Get assets belonging to the company
             List<AssetTypeEntity> assetTypeEntities = assetTypeService.getCompanyAssetTypes(company);
 
-            // Map AssetTypeEntities to AssetTypeDTOs if necessary
+            // Map AssetTypeEntities to AssetTypeDTOs
             List<AssetTypeDTO> assetTypeDTOs = assetTypeEntities.stream()
-                    .map(this::mapToDTO)
+                    .map(assetTypeEntity -> {
+                        AssetTypeDTO dto = mapToDTO(assetTypeEntity);
+                        dto.setProgramId(assetTypeEntity.getBugBountyProgram().getId());
+                        return dto;
+                    })
                     .collect(Collectors.toList());
 
             return ResponseEntity.ok(assetTypeDTOs);
@@ -103,15 +106,13 @@ public class BugBountyProgramController {
         }
     }
 
-
-
-    // Method to map AssetTypeEntity to AssetTypeDTO if necessary
     private AssetTypeDTO mapToDTO(AssetTypeEntity assetTypeEntity) {
-        AssetTypeDTO assetTypeDTO = new AssetTypeDTO();
-        assetTypeDTO.setLevel(assetTypeEntity.getLevel());
-        assetTypeDTO.setAssetType(assetTypeEntity.getAssetType());
-        assetTypeDTO.setPrice(assetTypeEntity.getPrice());
-        return assetTypeDTO;
+        AssetTypeDTO dto = new AssetTypeDTO();
+        dto.setId(assetTypeEntity.getId());
+        dto.setLevel(assetTypeEntity.getLevel());
+        dto.setAssetType(assetTypeEntity.getAssetType());
+        dto.setPrice(assetTypeEntity.getPrice());
+        return dto;
     }
 
 
@@ -137,13 +138,6 @@ public class BugBountyProgramController {
         }
     }
 
-
-    @GetMapping("/{id}")
-    @Secured("ROLE_COMPANY")
-    public ResponseEntity<BugBountyProgramEntity> getBugBountyProgramById(@PathVariable Long id) {
-        BugBountyProgramEntity program = bugBountyProgramService.getBugBountyProgramById(id);
-        return ResponseEntity.ok(program);
-    }
 
 
     @DeleteMapping("/{id}")

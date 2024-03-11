@@ -1,10 +1,7 @@
 package com.turingSecApp.turingSec.controller;
 
 
-import com.turingSecApp.turingSec.Request.ChangeEmailRequest;
-import com.turingSecApp.turingSec.Request.ChangePasswordRequest;
-import com.turingSecApp.turingSec.Request.LoginRequest;
-import com.turingSecApp.turingSec.Request.UserUpdateRequest;
+import com.turingSecApp.turingSec.Request.*;
 import com.turingSecApp.turingSec.dao.entities.*;
 import com.turingSecApp.turingSec.dao.entities.role.Role;
 import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
@@ -34,6 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -335,10 +333,54 @@ public class UserController {
 
 
     @GetMapping("/programs")
-    public ResponseEntity<List<BugBountyProgramEntity>> getAllBugBountyPrograms() {
+    public ResponseEntity<List<BugBountyProgramWithAssetTypeDTO>> getAllBugBountyPrograms() {
         List<BugBountyProgramEntity> programs = programsService.getAllBugBountyPrograms();
 
-        return ResponseEntity.ok(programs);
+        // Map BugBountyProgramEntities to BugBountyProgramDTOs
+        List<BugBountyProgramWithAssetTypeDTO> programDTOs = programs.stream()
+                .map(programEntity -> {
+                    BugBountyProgramWithAssetTypeDTO dto = mapToDTO(programEntity);
+                    dto.setCompanyId(programEntity.getCompany().getId());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(programDTOs);
+    }
+    private BugBountyProgramWithAssetTypeDTO mapToDTO(BugBountyProgramEntity programEntity) {
+        BugBountyProgramWithAssetTypeDTO dto = new BugBountyProgramWithAssetTypeDTO();
+        dto.setId(programEntity.getId());
+        dto.setFromDate(programEntity.getFromDate());
+        dto.setToDate(programEntity.getToDate());
+        dto.setNotes(programEntity.getNotes());
+        dto.setPolicy(programEntity.getPolicy());
+
+        // Map associated asset types
+        List<AssetTypeDTO> assetTypeDTOs = programEntity.getAssetTypes().stream()
+                .map(this::mapAssetTypeToDTO)
+                .collect(Collectors.toList());
+        dto.setAssetTypes(assetTypeDTOs);
+
+        // You can map other fields as needed
+
+        return dto;
+    }
+
+
+    private AssetTypeDTO mapAssetTypeToDTO(AssetTypeEntity assetTypeEntity) {
+        AssetTypeDTO dto = new AssetTypeDTO();
+        dto.setId(assetTypeEntity.getId());
+        dto.setLevel(assetTypeEntity.getLevel());
+        dto.setAssetType(assetTypeEntity.getAssetType());
+        dto.setPrice(assetTypeEntity.getPrice());
+        dto.setProgramId(assetTypeEntity.getBugBountyProgram().getId());
+
+        return dto;
+    }
+    @GetMapping("programs/{id}")
+    public ResponseEntity<BugBountyProgramEntity> getBugBountyProgramById(@PathVariable Long id) {
+        BugBountyProgramEntity program = programsService.getBugBountyProgramById(id);
+        return ResponseEntity.ok(program);
     }
 
 }
