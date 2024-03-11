@@ -8,7 +8,9 @@ import com.turingSecApp.turingSec.dao.repository.AdminRepository;
 import com.turingSecApp.turingSec.dao.repository.CompanyRepository;
 import com.turingSecApp.turingSec.dao.repository.RoleRepository;
 import com.turingSecApp.turingSec.exception.EmailAlreadyExistsException;
+import com.turingSecApp.turingSec.background_file_upload_for_hacker.repository.FileRepository;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +32,12 @@ public class CompanyService {
 
     @Autowired
     private EmailNotificationService emailNotificationService;
+    @Autowired
+    private FileRepository fileRepository;
+
+    @Autowired
+
+    private ModelMapper modelMapper;
 
     public String approveCompanyRegistration(Long companyId) {
         Optional<CompanyEntity> companyOptional = companyRepository.findById(companyId);
@@ -109,6 +117,17 @@ public class CompanyService {
         // Generate a random alphanumeric password with 12 characters
         return RandomStringUtils.randomAlphanumeric(12);
     }
+
+//    public ResponseEntity<CompanyResponse> getCompanyById(Long companyId) {
+//        Optional<CompanyEntity> company = companyRepository.findById(companyId);
+//
+//        File fileByCompanyId = fileRepository.findFileByCompanyId(companyId);
+//
+//        CompanyResponse blogPostResponse = modelMapper.map(company.get(), CompanyResponse.class);
+//        blogPostResponse.setFileId(fileByCompanyId.getId());
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(blogPostResponse);
+//    }
 
 
 

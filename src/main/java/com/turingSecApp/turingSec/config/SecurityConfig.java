@@ -46,6 +46,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
+                                .requestMatchers("/api/background-image-for-hacker/**", "/api/image-for-hacker/**", "/api/hacker/**").permitAll()
 
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
 
