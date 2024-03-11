@@ -377,7 +377,7 @@ public class UserController {
 
         return dto;
     }
-    @GetMapping("programs/{id}")
+    @GetMapping("programsById/{id}")
     public ResponseEntity<BugBountyProgramEntity> getBugBountyProgramById(@PathVariable Long id) {
         BugBountyProgramEntity program = programsService.getBugBountyProgramById(id);
         return ResponseEntity.ok(program);
