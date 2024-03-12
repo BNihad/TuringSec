@@ -1,7 +1,10 @@
 package com.turingSecApp.turingSec.service;
 
+import com.turingSecApp.turingSec.dao.entities.BugBountyProgramEntity;
+import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.entities.ReportsEntity;
 import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
+import com.turingSecApp.turingSec.dao.repository.CompanyRepository;
 import com.turingSecApp.turingSec.dao.repository.ReportsRepository;
 import com.turingSecApp.turingSec.dao.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +14,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class BugBountyReportService {
@@ -21,6 +22,11 @@ public class BugBountyReportService {
     private final ReportsRepository bugBountyReportRepository;
     @Autowired
     private UserRepository userRepository;
+
+
+    @Autowired
+    private CompanyRepository companyRepository;
+
 
     @Autowired
     public BugBountyReportService(ReportsRepository bugBountyReportRepository) {
@@ -85,4 +91,23 @@ public class BugBountyReportService {
         }
     }
 
+
+
+
+    public List<ReportsEntity> getBugBountyReportsForCompanyPrograms(CompanyEntity company) {
+        // Fetch the company entity along with its bug bounty programs within an active Hibernate session
+        company = companyRepository.findById(company.getId()).orElse(null);
+        if (company == null) {
+            // Handle case where company is not found
+            return Collections.emptyList();
+        }
+
+        // Access the bug bounty programs
+        Set<BugBountyProgramEntity> bugBountyPrograms = company.getBugBountyPrograms();
+
+        // Process the bug bounty programs as needed
+
+        // Return the bug bounty reports
+        return bugBountyReportRepository.findByBugBountyProgramIn(bugBountyPrograms);
+    }
 }

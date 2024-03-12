@@ -46,4 +46,10 @@ public class ReportsEntity {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private UserEntity user;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bug_bounty_program_id")
+    @JsonIgnore
+    private BugBountyProgramEntity bugBountyProgram;
 }

@@ -1,9 +1,12 @@
 package com.turingSecApp.turingSec.controller;
 
+import com.turingSecApp.turingSec.dao.entities.BugBountyProgramEntity;
+import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.entities.ReportsEntity;
 import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
 import com.turingSecApp.turingSec.dao.repository.UserRepository;
 import com.turingSecApp.turingSec.service.BugBountyReportService;
+import com.turingSecApp.turingSec.service.user.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +44,7 @@ public class BugBountyReportController {
 
 
     @PostMapping("/submit")
-    public ResponseEntity<?> submitBugBountyReport(@RequestBody ReportsEntity report) {
+    public ResponseEntity<?> submitBugBountyReport(@RequestBody ReportsEntity report, @RequestParam Long bugBountyProgramId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated()) {
@@ -55,6 +58,11 @@ public class BugBountyReportController {
             // Set the user for the bug bounty report
             report.setUser(user);
 
+            // Set the bug bounty program for the bug bounty report
+            BugBountyProgramEntity program = new BugBountyProgramEntity();
+            program.setId(bugBountyProgramId);
+            report.setBugBountyProgram(program);
+
             // Save the bug bounty report
             bugBountyReportService.submitBugBountyReport(report);
 
@@ -63,6 +71,7 @@ public class BugBountyReportController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         }
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<ReportsEntity> updateBugBountyReport(@PathVariable Long id,
@@ -81,5 +90,20 @@ public class BugBountyReportController {
     public ResponseEntity<List<ReportsEntity>> getAllBugBountyReportsByUser() {
         List<ReportsEntity> userReports = bugBountyReportService.getAllReportsByUser();
         return new ResponseEntity<>(userReports, HttpStatus.OK);
+    }
+
+    @GetMapping("/company")
+    public ResponseEntity<List<ReportsEntity>> getBugBountyReportsForCompanyPrograms() {
+        // Retrieve the authenticated user details
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        // Extract the company from the authenticated user details
+        CompanyEntity company = (CompanyEntity) userDetails.getUser();
+
+        // Retrieve bug bounty reports submitted for the company's programs
+        List<ReportsEntity> reportsForCompanyPrograms = bugBountyReportService.getBugBountyReportsForCompanyPrograms(company);
+
+        return ResponseEntity.ok(reportsForCompanyPrograms);
     }
 }
