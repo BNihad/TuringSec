@@ -14,6 +14,8 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/background-image-for-hacker")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*")
+
 public class BackgroundImageForHackerController {
 
     private final FileService fileService;

@@ -13,6 +13,8 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/image-for-hacker")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*")
+
 public class ImageForHackerController {
 
     private final ImageForHackerService imageForHackerService;
