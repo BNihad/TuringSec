@@ -1,5 +1,6 @@
 package com.turingSecApp.turingSec.controller;
 
+import com.turingSecApp.turingSec.Request.ReportsByUserDTO;
 import com.turingSecApp.turingSec.dao.entities.BugBountyProgramEntity;
 import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.entities.ReportsEntity;
@@ -93,16 +94,24 @@ public class BugBountyReportController {
     }
 
     @GetMapping("/reports/company")
-    public ResponseEntity<List<ReportsEntity>> getBugBountyReportsForCompanyPrograms() {
+    public ResponseEntity<List<ReportsByUserDTO>> getBugBountyReportsForCompanyPrograms() {
         // Retrieve the authenticated user details
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         // Extract the company from the authenticated user details
-        CompanyEntity company = (CompanyEntity) userDetails.getUser();
+        Object user = userDetails.getUser();
+        CompanyEntity company = null;
+        if (user instanceof CompanyEntity) {
+            company = (CompanyEntity) user;
+        } else {
+            // Handle the case where the user is not a company (e.g., throw an exception or return an error response)
+            // For example:
+            throw new IllegalStateException("Authenticated user is not a company");
+        }
 
         // Retrieve bug bounty reports submitted for the company's programs
-        List<ReportsEntity> reportsForCompanyPrograms = bugBountyReportService.getBugBountyReportsForCompanyPrograms(company);
+        List<ReportsByUserDTO> reportsForCompanyPrograms = bugBountyReportService.getBugBountyReportsForCompanyPrograms(company);
 
         return ResponseEntity.ok(reportsForCompanyPrograms);
     }

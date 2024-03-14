@@ -1,5 +1,6 @@
 package com.turingSecApp.turingSec.service;
 
+import com.turingSecApp.turingSec.Request.ReportsByUserDTO;
 import com.turingSecApp.turingSec.dao.entities.BugBountyProgramEntity;
 import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.entities.ReportsEntity;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BugBountyReportService {
@@ -94,20 +96,33 @@ public class BugBountyReportService {
 
 
 
-    public List<ReportsEntity> getBugBountyReportsForCompanyPrograms(CompanyEntity company) {
+    public List<ReportsByUserDTO> getBugBountyReportsForCompanyPrograms(CompanyEntity company) {
         // Fetch the company entity along with its bug bounty programs within an active Hibernate session
         company = companyRepository.findById(company.getId()).orElse(null);
         if (company == null) {
-            // Handle case where company is not found
+            System.out.println("Company is not found");
             return Collections.emptyList();
         }
 
         // Access the bug bounty programs
         Set<BugBountyProgramEntity> bugBountyPrograms = company.getBugBountyPrograms();
 
-        // Process the bug bounty programs as needed
+        // Retrieve bug bounty reports submitted for the company's programs
+        List<ReportsEntity> reports = bugBountyReportRepository.findByBugBountyProgramIn(bugBountyPrograms);
 
-        // Return the bug bounty reports
-        return bugBountyReportRepository.findByBugBountyProgramIn(bugBountyPrograms);
+        // Create a list to hold ReportsByUserDTO objects
+        List<ReportsByUserDTO> reportsByUsers = new ArrayList<>();
+
+        // Group reports by user ID
+        Map<Long, List<ReportsEntity>> reportsByUserId = reports.stream()
+                .collect(Collectors.groupingBy(report -> report.getUser().getId()));
+
+        // Create ReportsByUserDTO objects for each user and add them to the list
+        for (Map.Entry<Long, List<ReportsEntity>> entry : reportsByUserId.entrySet()) {
+            ReportsByUserDTO dto = new ReportsByUserDTO(entry.getKey(), entry.getValue());
+            reportsByUsers.add(dto);
+        }
+
+        return reportsByUsers;
     }
 }
