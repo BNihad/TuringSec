@@ -92,7 +92,7 @@ public class BugBountyReportController {
         return new ResponseEntity<>(userReports, HttpStatus.OK);
     }
 
-    @GetMapping("/company")
+    @GetMapping("/reports/company")
     public ResponseEntity<List<ReportsEntity>> getBugBountyReportsForCompanyPrograms() {
         // Retrieve the authenticated user details
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
