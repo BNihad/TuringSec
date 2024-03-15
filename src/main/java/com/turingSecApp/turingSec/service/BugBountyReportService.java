@@ -1,6 +1,7 @@
 package com.turingSecApp.turingSec.service;
 
 import com.turingSecApp.turingSec.Request.ReportsByUserDTO;
+import com.turingSecApp.turingSec.Request.UserDTO;
 import com.turingSecApp.turingSec.dao.entities.BugBountyProgramEntity;
 import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.entities.ReportsEntity;
@@ -95,7 +96,6 @@ public class BugBountyReportService {
 
 
 
-
     public List<ReportsByUserDTO> getBugBountyReportsForCompanyPrograms(CompanyEntity company) {
         // Fetch the company entity along with its bug bounty programs within an active Hibernate session
         company = companyRepository.findById(company.getId()).orElse(null);
@@ -110,19 +110,17 @@ public class BugBountyReportService {
         // Retrieve bug bounty reports submitted for the company's programs
         List<ReportsEntity> reports = bugBountyReportRepository.findByBugBountyProgramIn(bugBountyPrograms);
 
-        // Create a list to hold ReportsByUserDTO objects
-        List<ReportsByUserDTO> reportsByUsers = new ArrayList<>();
-
-        // Group reports by user ID
-        Map<Long, List<ReportsEntity>> reportsByUserId = reports.stream()
-                .collect(Collectors.groupingBy(report -> report.getUser().getId()));
+        // Group reports by user
+        Map<UserDTO, List<ReportsEntity>> reportsByUser = reports.stream()
+                .collect(Collectors.groupingBy(report -> new UserDTO(report.getUser().getId(), report.getUser().getUsername(),report.getUser().getEmail())));
 
         // Create ReportsByUserDTO objects for each user and add them to the list
-        for (Map.Entry<Long, List<ReportsEntity>> entry : reportsByUserId.entrySet()) {
-            ReportsByUserDTO dto = new ReportsByUserDTO(entry.getKey(), entry.getValue());
-            reportsByUsers.add(dto);
-        }
+        List<ReportsByUserDTO> reportsByUsers = reportsByUser.entrySet().stream()
+                .map(entry -> new ReportsByUserDTO(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
 
         return reportsByUsers;
     }
+
+
 }
