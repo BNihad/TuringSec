@@ -1,6 +1,7 @@
 package com.turingSecApp.turingSec.controller;
 
 import com.turingSecApp.turingSec.Request.ReportsByUserDTO;
+import com.turingSecApp.turingSec.Request.ReportsByUserWithCompDTO;
 import com.turingSecApp.turingSec.dao.entities.BugBountyProgramEntity;
 import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.entities.ReportsEntity;
@@ -88,8 +89,8 @@ public class BugBountyReportController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<ReportsEntity>> getAllBugBountyReportsByUser() {
-        List<ReportsEntity> userReports = bugBountyReportService.getAllReportsByUser();
+    public ResponseEntity<List<ReportsByUserWithCompDTO>> getAllBugBountyReportsByUser() {
+        List<ReportsByUserWithCompDTO> userReports = bugBountyReportService.getAllReportsByUser();
         return new ResponseEntity<>(userReports, HttpStatus.OK);
     }
 

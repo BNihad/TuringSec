@@ -1,6 +1,7 @@
 package com.turingSecApp.turingSec.service;
 
 import com.turingSecApp.turingSec.Request.ReportsByUserDTO;
+import com.turingSecApp.turingSec.Request.ReportsByUserWithCompDTO;
 import com.turingSecApp.turingSec.Request.UserDTO;
 import com.turingSecApp.turingSec.dao.entities.BugBountyProgramEntity;
 import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
@@ -78,7 +79,8 @@ public class BugBountyReportService {
 
 
 
-    public List<ReportsEntity> getAllReportsByUser() {
+
+    public List<ReportsByUserWithCompDTO> getAllReportsByUser() {
         // Retrieve the username of the authenticated user
         String username = getUsernameFromToken();
 
@@ -87,7 +89,29 @@ public class BugBountyReportService {
 
         // If user found, get all reports associated with that user
         if (user != null) {
-            return bugBountyReportRepository.findByUser(user);
+            // Get all reports associated with the user
+            List<ReportsEntity> userReports = bugBountyReportRepository.findByUser(user);
+
+            // Group reports by user
+            Map<UserDTO, List<ReportsEntity>> reportsByUser = userReports.stream()
+                    .collect(Collectors.groupingBy(report -> new UserDTO(report.getUser().getId(), report.getUser().getUsername(), report.getUser().getEmail())));
+
+            // Create ReportsByUserDTO objects for each user and add them to the list
+            List<ReportsByUserWithCompDTO> reportsByUsers = reportsByUser.entrySet().stream()
+                    .map(entry -> {
+                        UserDTO userDTO = entry.getKey();
+                        List<ReportsEntity> reports = entry.getValue();
+                        // Extract a single company name from bug bounty programs associated with the reports
+                        String companyName = reports.stream()
+                                .map(report -> report.getBugBountyProgram().getCompany().getCompany_name())
+                                .findFirst()
+                                .orElse(null);
+                        // Create and return the ReportsByUserDTO object
+                        return new ReportsByUserWithCompDTO(companyName, reports);
+                    })
+                    .collect(Collectors.toList());
+
+            return reportsByUsers;
         } else {
             // If user not found, return an empty list or handle as needed
             return Collections.emptyList();
