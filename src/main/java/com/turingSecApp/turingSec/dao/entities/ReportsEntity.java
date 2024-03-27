@@ -42,6 +42,16 @@ public class ReportsEntity {
     @Column(name = "discovery_details")
     private String discoveryDetails;
 
+    @Column(name = "last_activity")
+    private String lastActivity;
+
+    @Column(name = "report_title")
+    private String reportTitle;
+
+    @Column(name = "rewards")
+    private String rewards;
+
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnore
