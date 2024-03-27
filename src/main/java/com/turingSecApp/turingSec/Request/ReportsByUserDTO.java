@@ -13,5 +13,6 @@ import java.util.List;
 @Setter
 public class ReportsByUserDTO {
     private UserDTO user;
+    private String userImgUrl; // Add image URL field
     private List<ReportsEntity> reports;
 }

@@ -116,4 +116,5 @@ public class BugBountyReportController {
 
         return ResponseEntity.ok(reportsForCompanyPrograms);
     }
+
 }

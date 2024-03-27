@@ -136,15 +136,31 @@ public class BugBountyReportService {
 
         // Group reports by user
         Map<UserDTO, List<ReportsEntity>> reportsByUser = reports.stream()
-                .collect(Collectors.groupingBy(report -> new UserDTO(report.getUser().getId(), report.getUser().getUsername(),report.getUser().getEmail())));
+                .collect(Collectors.groupingBy(report -> new UserDTO(report.getUser().getId(), report.getUser().getUsername(), report.getUser().getEmail())));
+
+        // Fetch image URL for each user
+        Map<Long, String> userImgUrls = reportsByUser.keySet().stream()
+                .collect(Collectors.toMap(UserDTO::getId, this::getUserImgUrl, (url1, url2) -> url1)); // Merge function to handle duplicate keys
 
         // Create ReportsByUserDTO objects for each user and add them to the list
         List<ReportsByUserDTO> reportsByUsers = reportsByUser.entrySet().stream()
-                .map(entry -> new ReportsByUserDTO(entry.getKey(), entry.getValue()))
+                .map(entry -> {
+                    UserDTO userDTO = entry.getKey();
+                    List<ReportsEntity> userReports = entry.getValue();
+                    String imgUrl = userImgUrls.getOrDefault(userDTO.getId(), ""); // Get image URL for the user
+                    return new ReportsByUserDTO(userDTO, imgUrl, userReports);
+                })
                 .collect(Collectors.toList());
 
         return reportsByUsers;
     }
+
+
+    private String getUserImgUrl(UserDTO userDTO) {
+
+        return "https://turingsec-production-de02.up.railway.app/api/background-image-for-hacker/download/" + userDTO.getId();
+    }
+
 
 
 }
