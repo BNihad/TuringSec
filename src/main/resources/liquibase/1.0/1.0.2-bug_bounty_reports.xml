@@ -15,9 +15,18 @@
             <column name="method_name" type="VARCHAR(255)"/>
             <column name="proof_of_concept" type="CLOB"/>
             <column name="discovery_details" type="CLOB"/>
-            <column name="last_activity" type="VARCHAR(255)" defaultOnNull="true"/>
-            <column name="report_title" type="VARCHAR(255)" defaultOnNull="true"/>
-            <column name="rewards" type="VARCHAR(255)" defaultOnNull="true"/>
+            <column name="last_activity" type="date" defaultValue="2024-03-27">
+            </column>
+            <column name="report_title" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="rewards_status" type="VARCHAR(255)" defaultValue="pending" >
+
+            </column>
+
+            <column name="vulnerability_url" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
 
         </createTable>
     </changeSet>

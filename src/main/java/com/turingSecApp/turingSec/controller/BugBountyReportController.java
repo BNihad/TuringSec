@@ -3,6 +3,7 @@ package com.turingSecApp.turingSec.controller;
 import com.turingSecApp.turingSec.Request.ReportsByUserDTO;
 import com.turingSecApp.turingSec.Request.ReportsByUserWithCompDTO;
 import com.turingSecApp.turingSec.dao.entities.BugBountyProgramEntity;
+import com.turingSecApp.turingSec.dao.entities.CollaboratorEntity;
 import com.turingSecApp.turingSec.dao.entities.CompanyEntity;
 import com.turingSecApp.turingSec.dao.entities.ReportsEntity;
 import com.turingSecApp.turingSec.dao.entities.user.UserEntity;
@@ -65,6 +66,11 @@ public class BugBountyReportController {
             program.setId(bugBountyProgramId);
             report.setBugBountyProgram(program);
 
+            // Set the bug bounty report for each collaborator
+            for (CollaboratorEntity collaborator : report.getCollaborators()) {
+                collaborator.setBugBountyReport(report);
+            }
+
             // Save the bug bounty report
             bugBountyReportService.submitBugBountyReport(report);
 
@@ -73,6 +79,7 @@ public class BugBountyReportController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         }
     }
+
 
 
     @PutMapping("/{id}")
@@ -116,5 +123,4 @@ public class BugBountyReportController {
 
         return ResponseEntity.ok(reportsForCompanyPrograms);
     }
-
 }

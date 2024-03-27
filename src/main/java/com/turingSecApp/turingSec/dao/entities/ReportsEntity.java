@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.persistence.*;
 
+import java.util.Date;
+import java.util.List;
+
 
 @Entity
 @AllArgsConstructor
@@ -43,13 +46,16 @@ public class ReportsEntity {
     private String discoveryDetails;
 
     @Column(name = "last_activity")
-    private String lastActivity;
+    private Date lastActivity;
 
     @Column(name = "report_title")
     private String reportTitle;
 
-    @Column(name = "rewards")
-    private String rewards;
+    @Column(name = "rewards_status")
+    private String rewardsStatus;
+
+    @Column(name = "vulnerability_url")
+    private String vulnerabilityUrl;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -62,4 +68,11 @@ public class ReportsEntity {
     @JoinColumn(name = "bug_bounty_program_id")
     @JsonIgnore
     private BugBountyProgramEntity bugBountyProgram;
+
+
+
+    @OneToMany(mappedBy = "bugBountyReport", cascade = CascadeType.ALL)
+    private List<CollaboratorEntity> collaborators;
+
+
 }
