@@ -383,4 +383,11 @@ public class UserController {
         return ResponseEntity.ok(program);
     }
 
+
+    @GetMapping("/allUsers")
+    public ResponseEntity<List<UserEntity>> getAllUsers() {
+        List<UserEntity> userEntities = userService.getAllUsers();
+        return new ResponseEntity<>(userEntities, HttpStatus.OK);
+    }
+
 }

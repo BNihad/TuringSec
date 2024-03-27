@@ -49,6 +49,8 @@ public class SecurityConfig {
                                 .requestMatchers("/api/background-image-for-hacker/**", "/api/image-for-hacker/**", "/api/hacker/**").permitAll()
 
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                                .requestMatchers("/api/auth/allUsers").permitAll() // Public endpoints for registration and login
+
 
                                 .requestMatchers("/api/auth/activate").permitAll() // Public endpoints for registration and login
                                 .requestMatchers("/api/auth/login").permitAll() // Public endpoints for registration and login

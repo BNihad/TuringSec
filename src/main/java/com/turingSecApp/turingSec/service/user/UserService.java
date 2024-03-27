@@ -149,6 +149,12 @@ public class UserService {
         return companyRepository.findAll();
     }
 
+
+    public List<UserEntity> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+
     public CompanyEntity getCompaniesById(Long id) {
         Optional<CompanyEntity> companyEntity = companyRepository.findById(id);
         return companyEntity.orElseThrow(() -> new ResourceNotFoundException("Bug Bounty Program not found"));
